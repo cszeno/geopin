@@ -24,6 +24,9 @@ class PlatformLocationDataSource implements LocationDataSource {
   
   PlatformLocationDataSource._internal();
 
+  // 跟踪初始化状态
+  bool _isInitialized = false;
+
   @override
   Future<bool> checkLocationPermission() async {
     try {
@@ -49,7 +52,17 @@ class PlatformLocationDataSource implements LocationDataSource {
   @override
   Future<bool> initLocationService() async {
     try {
+      // 如果已经初始化过，避免重复初始化
+      if (_isInitialized) {
+        return true;
+      }
+      
       final bool result = await _methodChannel.invokeMethod('initLocationService');
+      
+      if (result) {
+        _isInitialized = true;
+      }
+      
       return result;
     } on PlatformException catch (e) {
       print('初始化位置服务失败: ${e.message}');
@@ -69,7 +82,12 @@ class PlatformLocationDataSource implements LocationDataSource {
         final Map<String, dynamic> locationData = Map<String, dynamic>.from(event);
         _locationController?.add(locationData);
       }, onError: (dynamic error) {
+        print('位置事件通道错误: $error');
         _locationController?.addError('位置监听错误: $error');
+      }, onDone: () {
+        // 如果底层平台通道结束，尝试重新初始化
+        print('位置事件通道已关闭，尝试重新初始化');
+        _isInitialized = false;
       });
       
       _locationStream = _locationController?.stream;
@@ -87,6 +105,7 @@ class PlatformLocationDataSource implements LocationDataSource {
       await _locationController?.close();
       _locationController = null;
       _locationStream = null;
+      _isInitialized = false;
       
       return result;
     } on PlatformException catch (e) {

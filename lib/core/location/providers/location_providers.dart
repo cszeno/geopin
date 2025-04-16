@@ -1,6 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../utils/result.dart';
 import '../data/datasources/platform_location_data_source.dart';
 import '../data/repositories/location_repository_impl.dart';
 import '../domain/entities/location.dart';
@@ -10,6 +9,7 @@ import '../domain/usecases/get_location_updates.dart';
 import '../domain/usecases/initialize_location_service.dart';
 import '../domain/usecases/set_location_accuracy.dart';
 import '../domain/usecases/stop_location_updates.dart';
+import '../../../core/utils/result.dart';
 
 /// 位置数据源提供者
 final locationDataSourceProvider = Provider<PlatformLocationDataSource>((ref) {

@@ -3,43 +3,26 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../core/location/domain/entities/location.dart';
 import '../../../../core/location/providers/location_providers.dart';
-import '../providers/location_controller.dart';
+import '../../../../core/location/providers/location_action_providers.dart';
 import '../widgets/accuracy_indicator.dart';
 import '../widgets/location_card.dart';
 import '../widgets/location_detail_card.dart';
 
 /// 位置显示页面
-class LocationPage extends ConsumerStatefulWidget {
+class LocationPage extends ConsumerWidget {
   /// 构造函数
   const LocationPage({super.key});
 
   @override
-  ConsumerState<LocationPage> createState() => _LocationPageState();
-}
-
-class _LocationPageState extends ConsumerState<LocationPage> {
-  @override
-  void initState() {
-    super.initState();
-    // 在初始化时启动位置服务
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      ref.read(locationControllerProvider.notifier).initializeLocationService();
-    });
-  }
-
-  @override
-  void dispose() {
-    // 在页面销毁时停止位置服务
-    ref.read(locationControllerProvider.notifier).stopLocationService();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     // 监听位置服务状态
     final serviceStatus = ref.watch(locationServiceStatusProvider);
     final errorMessage = ref.watch(locationErrorMessageProvider);
     final accuracyLevel = ref.watch(locationAccuracyProvider);
+    
+    // 获取操作回调
+    final changeAccuracy = ref.watch(locationAccuracyChangerProvider);
+    final retryInitialization = ref.watch(locationRetryProvider);
     
     // 监听位置数据流
     final locationData = ref.watch(locationStreamProvider);
@@ -52,9 +35,7 @@ class _LocationPageState extends ConsumerState<LocationPage> {
           PopupMenuButton<int>(
             icon: const Icon(Icons.tune),
             tooltip: '调整精度',
-            onSelected: (accuracy) {
-              ref.read(locationControllerProvider.notifier).changeAccuracy(accuracy);
-            },
+            onSelected: changeAccuracy,
             itemBuilder: (context) => [
               const PopupMenuItem(
                 value: 0,
@@ -73,20 +54,24 @@ class _LocationPageState extends ConsumerState<LocationPage> {
         ],
       ),
       body: _buildBody(
+        context: context,
         serviceStatus: serviceStatus,
         errorMessage: errorMessage,
         accuracyLevel: accuracyLevel,
         locationData: locationData,
+        retryInitialization: retryInitialization,
       ),
     );
   }
 
   /// 构建页面主体
   Widget _buildBody({
+    required BuildContext context,
     required LocationServiceStatus serviceStatus,
     required String? errorMessage,
     required int accuracyLevel,
     required AsyncValue<Location> locationData,
+    required VoidCallback retryInitialization,
   }) {
     // 显示错误信息
     if (serviceStatus == LocationServiceStatus.error) {
@@ -105,9 +90,7 @@ class _LocationPageState extends ConsumerState<LocationPage> {
               ),
               const SizedBox(height: 24),
               ElevatedButton(
-                onPressed: () {
-                  ref.read(locationControllerProvider.notifier).initializeLocationService();
-                },
+                onPressed: retryInitialization,
                 child: const Text('重试'),
               ),
             ],
