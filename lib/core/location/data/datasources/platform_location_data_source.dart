@@ -1,9 +1,10 @@
 import 'dart:async';
 import 'package:flutter/services.dart';
 
-/// 高精度位置服务类
-/// 通过平台通道与原生代码交互获取高精度位置信息
-class LocationService {
+import 'location_data_source.dart';
+
+/// 通过平台通道实现的位置数据源
+class PlatformLocationDataSource implements LocationDataSource {
   // 定义平台通道
   static const MethodChannel _methodChannel = MethodChannel('cn.geopin.geopin/location_method');
   static const EventChannel _eventChannel = EventChannel('cn.geopin.geopin/location_event');
@@ -15,16 +16,15 @@ class LocationService {
   Stream<Map<String, dynamic>>? _locationStream;
 
   // 单例模式
-  static final LocationService _instance = LocationService._internal();
+  static final PlatformLocationDataSource _instance = PlatformLocationDataSource._internal();
   
-  factory LocationService() {
+  factory PlatformLocationDataSource() {
     return _instance;
   }
   
-  LocationService._internal();
+  PlatformLocationDataSource._internal();
 
-  /// 检查位置权限
-  /// 返回是否已获得权限
+  @override
   Future<bool> checkLocationPermission() async {
     try {
       final bool hasPermission = await _methodChannel.invokeMethod('checkLocationPermission');
@@ -35,8 +35,7 @@ class LocationService {
     }
   }
 
-  /// 请求位置权限
-  /// 返回是否获得权限
+  @override
   Future<bool> requestLocationPermission() async {
     try {
       final bool granted = await _methodChannel.invokeMethod('requestLocationPermission');
@@ -47,11 +46,9 @@ class LocationService {
     }
   }
 
-  /// 初始化位置服务
-  /// 返回是否成功初始化
+  @override
   Future<bool> initLocationService() async {
     try {
-      // 调用原生方法初始化位置服务
       final bool result = await _methodChannel.invokeMethod('initLocationService');
       return result;
     } on PlatformException catch (e) {
@@ -60,8 +57,7 @@ class LocationService {
     }
   }
 
-  /// 开始监听位置变化
-  /// 返回位置数据流
+  @override
   Stream<Map<String, dynamic>> startLocationUpdates() {
     if (_locationStream == null) {
       // 创建位置流控制器
@@ -82,10 +78,9 @@ class LocationService {
     return _locationStream!;
   }
 
-  /// 停止位置更新
+  @override
   Future<bool> stopLocationUpdates() async {
     try {
-      // 调用原生方法停止位置服务
       final bool result = await _methodChannel.invokeMethod('stopLocationService');
       
       // 关闭流控制器
@@ -100,11 +95,9 @@ class LocationService {
     }
   }
 
-  /// 设置位置更新精度
-  /// [accuracy] 精度级别: 0-低, 1-平衡, 2-高
+  @override
   Future<bool> setLocationAccuracy(int accuracy) async {
     try {
-      // 调用原生方法设置精度
       final bool result = await _methodChannel.invokeMethod(
         'setLocationAccuracy', 
         {'accuracy': accuracy}
@@ -116,10 +109,9 @@ class LocationService {
     }
   }
 
-  /// 获取最后一次位置
+  @override
   Future<Map<String, dynamic>?> getLastLocation() async {
     try {
-      // 调用原生方法获取最后位置
       final Map<dynamic, dynamic>? result = await _methodChannel.invokeMethod('getLastLocation');
       if (result != null) {
         return Map<String, dynamic>.from(result);
