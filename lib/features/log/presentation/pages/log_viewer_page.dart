@@ -25,7 +25,14 @@ class _LogViewerPageState extends State<LogViewerPage> {
   @override
   void initState() {
     super.initState();
+    AppLogger.info('日志查看器页面初始化', loggerName: 'LogViewer');
     _loadLogFiles();
+  }
+
+  @override
+  void dispose() {
+    AppLogger.debug('日志查看器页面销毁', loggerName: 'LogViewer');
+    super.dispose();
   }
 
   /// 加载日志文件列表
@@ -33,9 +40,13 @@ class _LogViewerPageState extends State<LogViewerPage> {
     setState(() {
       _isLoading = true;
     });
+    
+    AppLogger.debug('正在加载日志文件列表', loggerName: 'LogViewer');
 
     try {
       final files = await AppLogger.getLogFiles();
+      AppLogger.debug('找到 ${files.length} 个日志文件', loggerName: 'LogViewer');
+      
       setState(() {
         _logFiles = files;
         _isLoading = false;
@@ -49,7 +60,7 @@ class _LogViewerPageState extends State<LogViewerPage> {
       setState(() {
         _isLoading = false;
       });
-      AppLogger.error('加载日志文件失败', error: e);
+      AppLogger.error('加载日志文件失败', error: e, loggerName: 'LogViewer');
       // 显示错误提示
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -64,15 +75,20 @@ class _LogViewerPageState extends State<LogViewerPage> {
     setState(() {
       _isLoading = true;
     });
+    
+    AppLogger.debug('正在加载日志文件: ${file.path}', loggerName: 'LogViewer');
 
     try {
       final content = await file.readAsString();
+      AppLogger.debug('成功读取日志文件内容，大小: ${content.length} 字节', loggerName: 'LogViewer');
+      
       setState(() {
         _currentLogContent = content;
         _selectedFile = file;
         _isLoading = false;
       });
     } catch (e) {
+      AppLogger.error('读取日志文件内容失败', error: e, loggerName: 'LogViewer');
       setState(() {
         _currentLogContent = '无法读取日志文件: $e';
         _isLoading = false;
@@ -82,6 +98,8 @@ class _LogViewerPageState extends State<LogViewerPage> {
 
   /// 清空所有日志
   Future<void> _clearAllLogs() async {
+    AppLogger.info('尝试清空所有日志', loggerName: 'LogViewer');
+    
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
@@ -101,6 +119,7 @@ class _LogViewerPageState extends State<LogViewerPage> {
     );
 
     if (confirmed == true) {
+      AppLogger.warning('用户确认清空所有日志', loggerName: 'LogViewer');
       setState(() {
         _isLoading = true;
       });
@@ -108,6 +127,7 @@ class _LogViewerPageState extends State<LogViewerPage> {
       try {
         final success = await AppLogger.clearAllLogs();
         if (success) {
+          AppLogger.info('成功清空所有日志', loggerName: 'LogViewer');
           // 重新加载日志文件
           await _loadLogFiles();
           if (mounted) {
@@ -119,6 +139,7 @@ class _LogViewerPageState extends State<LogViewerPage> {
           throw Exception('清空日志失败');
         }
       } catch (e) {
+        AppLogger.error('清空日志失败', error: e, loggerName: 'LogViewer');
         setState(() {
           _isLoading = false;
         });
@@ -128,19 +149,25 @@ class _LogViewerPageState extends State<LogViewerPage> {
           );
         }
       }
+    } else {
+      AppLogger.debug('用户取消清空日志操作', loggerName: 'LogViewer');
     }
   }
 
   /// 分享日志文件
   Future<void> _shareLogFile() async {
     if (_selectedFile == null) return;
+    
+    AppLogger.info('尝试分享日志文件: ${_selectedFile!.path}', loggerName: 'LogViewer');
 
     try {
       await Share.shareXFiles(
         [XFile(_selectedFile!.path)],
         subject: '应用日志 - ${_formatFileDate(_selectedFile!.path)}',
       );
+      AppLogger.info('分享日志文件成功', loggerName: 'LogViewer');
     } catch (e) {
+      AppLogger.error('分享日志文件失败', error: e, loggerName: 'LogViewer');
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('分享日志失败: $e')),
@@ -213,6 +240,7 @@ class _LogViewerPageState extends State<LogViewerPage> {
                                 selected: isSelected,
                                 onSelected: (selected) {
                                   if (selected) {
+                                    AppLogger.debug('选择日志文件: $date', loggerName: 'LogViewer');
                                     _loadLogContent(file);
                                   }
                                 },

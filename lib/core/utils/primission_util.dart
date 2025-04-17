@@ -1,5 +1,6 @@
 import 'package:flutter/services.dart';
 import 'package:geopin/core/constants/permission_constant.dart';
+import 'package:geopin/core/utils/app_logger.dart';
 
 class PermissionUtil {
   // 单例模式
@@ -21,7 +22,7 @@ class PermissionUtil {
           .invokeMethod('checkLocationPermission');
       return hasPermission;
     } on PlatformException catch (e) {
-      print('检查位置权限失败: ${e.message}');
+      AppLogger.error('检查位置权限失败', error: e, loggerName: 'PermissionUtil');
       return false;
     }
   }
@@ -34,7 +35,7 @@ class PermissionUtil {
           .invokeMethod('requestLocationPermission');
       return granted;
     } on PlatformException catch (e) {
-      print('请求位置权限失败: ${e.message}');
+      AppLogger.error('请求位置权限失败', error: e, loggerName: 'PermissionUtil');
       return false;
     }
   }

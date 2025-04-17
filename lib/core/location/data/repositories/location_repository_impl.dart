@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import '../../../../core/utils/app_logger.dart';
 import '../../domain/entities/location.dart';
 import '../../domain/repositories/location_repository.dart';
 import '../datasources/location_data_source.dart';
@@ -17,7 +18,7 @@ class LocationRepositoryImpl implements LocationRepository {
     try {
       return await _dataSource.initLocationService();
     } catch (e) {
-      print('初始化位置服务失败: $e');
+      AppLogger.error('初始化位置服务失败', error: e);
       return false;
     }
   }
@@ -27,7 +28,7 @@ class LocationRepositoryImpl implements LocationRepository {
     try {
       return await _dataSource.setLocationAccuracy(accuracy);
     } catch (e) {
-      print('设置位置精度失败: $e');
+      AppLogger.error('设置位置精度失败', error: e);
       return false;
     }
   }
@@ -40,12 +41,12 @@ class LocationRepositoryImpl implements LocationRepository {
         try {
           return Location.fromMap(locationData);
         } catch (e) {
-          print('解析位置数据失败: $e');
+          AppLogger.error('解析位置数据失败', error: e);
           throw Exception('解析位置数据失败: $e');
         }
       });
     } catch (e) {
-      print('获取位置更新失败: $e');
+      AppLogger.error('获取位置更新失败', error: e);
       // 发生错误时返回空流
       return Stream.empty();
     }
@@ -62,7 +63,7 @@ class LocationRepositoryImpl implements LocationRepository {
       
       return Location.fromMap(locationData);
     } catch (e) {
-      print('获取最后位置失败: $e');
+      AppLogger.error('获取最后位置失败', error: e);
       return null;
     }
   }
@@ -72,7 +73,7 @@ class LocationRepositoryImpl implements LocationRepository {
     try {
       return await _dataSource.stopLocationUpdates();
     } catch (e) {
-      print('停止位置更新失败: $e');
+      AppLogger.error('停止位置更新失败', error: e);
       return false;
     }
   }

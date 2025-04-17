@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:flutter/services.dart';
 
+import '../../../../core/utils/app_logger.dart';
 import 'location_data_source.dart';
 
 /// 通过平台通道实现的位置数据源
@@ -36,7 +37,7 @@ class PlatformLocationDataSource implements LocationDataSource {
       final bool hasPermission = await _methodChannel.invokeMethod('checkLocationPermission');
       return hasPermission;
     } on PlatformException catch (e) {
-      print('检查位置权限失败: ${e.message}');
+      AppLogger.error('检查位置权限失败', error: e, loggerName: 'LocationDataSource');
       return false;
     }
   }
@@ -47,7 +48,7 @@ class PlatformLocationDataSource implements LocationDataSource {
       final bool granted = await _methodChannel.invokeMethod('requestLocationPermission');
       return granted;
     } on PlatformException catch (e) {
-      print('请求位置权限失败: ${e.message}');
+      AppLogger.error('请求位置权限失败', error: e, loggerName: 'LocationDataSource');
       return false;
     }
   }
@@ -68,7 +69,7 @@ class PlatformLocationDataSource implements LocationDataSource {
       
       return result;
     } on PlatformException catch (e) {
-      print('初始化位置服务失败: ${e.message}');
+      AppLogger.error('初始化位置服务失败', error: e, loggerName: 'LocationDataSource');
       return false;
     }
   }
@@ -100,7 +101,7 @@ class PlatformLocationDataSource implements LocationDataSource {
           }
         },
         onError: (dynamic error) {
-          print('位置事件通道错误: $error');
+          AppLogger.error('位置事件通道错误', error: error, loggerName: 'LocationDataSource');
           _locationController?.addError('位置监听错误: $error');
           
           // 在出错后尝试重新建立连接
@@ -108,13 +109,13 @@ class PlatformLocationDataSource implements LocationDataSource {
         },
         onDone: () {
           // 如果底层平台通道结束，尝试重新初始化
-          print('位置事件通道已关闭，尝试重新初始化');
+          AppLogger.info('位置事件通道已关闭，尝试重新初始化', loggerName: 'LocationDataSource');
           _isInitialized = false;
           _restartLocationService();
         },
       );
     } catch (e) {
-      print('开始监听位置事件失败: $e');
+      AppLogger.error('开始监听位置事件失败', error: e, loggerName: 'LocationDataSource');
       _locationController?.addError('开始监听位置事件失败: $e');
     }
   }
@@ -140,7 +141,7 @@ class PlatformLocationDataSource implements LocationDataSource {
         }
       }
     } catch (e) {
-      print('重新启动位置服务失败: $e');
+      AppLogger.error('重新启动位置服务失败', error: e, loggerName: 'LocationDataSource');
       _locationController?.addError('重新启动位置服务失败: $e');
     }
   }
@@ -159,7 +160,7 @@ class PlatformLocationDataSource implements LocationDataSource {
       
       return result;
     } on PlatformException catch (e) {
-      print('停止位置服务失败: ${e.message}');
+      AppLogger.error('停止位置服务失败', error: e, loggerName: 'LocationDataSource');
       return false;
     }
   }
@@ -173,7 +174,7 @@ class PlatformLocationDataSource implements LocationDataSource {
       );
       return result;
     } on PlatformException catch (e) {
-      print('设置位置精度失败: ${e.message}');
+      AppLogger.error('设置位置精度失败', error: e, loggerName: 'LocationDataSource');
       return false;
     }
   }
@@ -187,7 +188,7 @@ class PlatformLocationDataSource implements LocationDataSource {
       }
       return null;
     } on PlatformException catch (e) {
-      print('获取最后位置失败: ${e.message}');
+      AppLogger.error('获取最后位置失败', error: e, loggerName: 'LocationDataSource');
       return null;
     }
   }
