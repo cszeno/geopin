@@ -17,16 +17,6 @@ class InitializeLocationService {
   /// [accuracy] 精度级别: 0-低精度, 1-平衡精度, 2-高精度 (默认高精度)
   /// 返回初始化结果
   Future<Result<bool>> call({int accuracy = 2}) async {
-    // 请求权限
-    final permissionResult = await _repository.requestLocationPermission();
-    if (permissionResult.isFailure) {
-      return permissionResult;
-    }
-
-    if (permissionResult.data == false) {
-      return permissionResult;
-    }
-
     // 初始化服务
     final initResult = await _repository.initLocationService();
     if (initResult.isFailure) {

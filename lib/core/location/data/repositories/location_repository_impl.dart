@@ -15,33 +15,6 @@ class LocationRepositoryImpl implements LocationRepository {
   LocationRepositoryImpl(this._dataSource);
 
   @override
-  Future<Result<bool>> checkLocationPermission() async {
-    try {
-      final bool hasPermission = await _dataSource.checkLocationPermission();
-      return Result.success(hasPermission);
-    } catch (e) {
-      return Result.failure(
-        LocationFailure.general(message: '检查位置权限失败: $e'),
-      );
-    }
-  }
-
-  @override
-  Future<Result<bool>> requestLocationPermission() async {
-    try {
-      final bool granted = await _dataSource.requestLocationPermission();
-      if (!granted) {
-        return Result.failure(LocationFailure.permissionDenied());
-      }
-      return Result.success(true);
-    } catch (e) {
-      return Result.failure(
-        LocationFailure.general(message: '请求位置权限失败: $e'),
-      );
-    }
-  }
-
-  @override
   Future<Result<bool>> initLocationService() async {
     try {
       final bool initialized = await _dataSource.initLocationService();

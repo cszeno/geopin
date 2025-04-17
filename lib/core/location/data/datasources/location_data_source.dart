@@ -4,16 +4,6 @@ import 'dart:async';
 /// 
 /// 定义与原生位置服务交互的方法
 abstract class LocationDataSource {
-  /// 检查位置权限
-  /// 
-  /// 返回是否已获得权限
-  Future<bool> checkLocationPermission();
-  
-  /// 请求位置权限
-  /// 
-  /// 返回是否获得权限
-  Future<bool> requestLocationPermission();
-  
   /// 初始化位置服务
   /// 
   /// 返回是否成功初始化

@@ -7,16 +7,6 @@ import '../entities/location.dart';
 /// 
 /// 定义与位置服务交互的方法
 abstract class LocationRepository {
-  /// 检查位置权限
-  /// 
-  /// 返回是否有位置权限的结果
-  Future<Result<bool>> checkLocationPermission();
-  
-  /// 请求位置权限
-  /// 
-  /// 返回是否获取到位置权限的结果
-  Future<Result<bool>> requestLocationPermission();
-  
   /// 初始化位置服务
   /// 
   /// 返回初始化结果

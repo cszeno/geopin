@@ -2,14 +2,25 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../features/location/presentation/pages/location_page.dart';
+import '../../features/splash/presentation/pages/splash_page.dart';
 
 /// 应用路由配置
 class AppRouter {
   /// 创建路由配置
   static GoRouter createRouter() {
     return GoRouter(
-      initialLocation: '/',
-      routes: [
+      initialLocation: '/splash',
+      routes: <RouteBase>[
+        // 启动页路由
+        GoRoute(
+          path: '/splash',
+          name: 'splash',
+          builder: (BuildContext context, GoRouterState state) {
+            return const SplashPage();
+          },
+        ),
+        
+        // 主页路由 - 位置显示页面
         GoRoute(
           path: '/',
           builder: (context, state) => const LocationPage(),

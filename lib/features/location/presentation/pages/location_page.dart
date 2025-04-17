@@ -1,32 +1,27 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:provider/provider.dart';
 
 import '../../../../core/location/domain/entities/location.dart';
-import '../../../../core/location/providers/location_providers.dart';
-import '../../../../core/location/providers/location_action_providers.dart';
+import '../../../../core/location/providers/location_service_provider.dart';
 import '../widgets/accuracy_indicator.dart';
 import '../widgets/location_card.dart';
 import '../widgets/location_detail_card.dart';
 
 /// 位置显示页面
-class LocationPage extends ConsumerWidget {
+class LocationPage extends StatelessWidget {
   /// 构造函数
   const LocationPage({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
+    // 获取位置服务提供者
+    final locationService = Provider.of<LocationServiceProvider>(context);
+    
     // 监听位置服务状态
-    final serviceStatus = ref.watch(locationServiceStatusProvider);
-    final errorMessage = ref.watch(locationErrorMessageProvider);
-    final accuracyLevel = ref.watch(locationAccuracyProvider);
+    final serviceStatus = locationService.serviceStatus;
+    final errorMessage = locationService.errorMessage;
+    final accuracyLevel = locationService.accuracyLevel;
     
-    // 获取操作回调
-    final changeAccuracy = ref.watch(locationAccuracyChangerProvider);
-    final retryInitialization = ref.watch(locationRetryProvider);
-    
-    // 监听位置数据流
-    final locationData = ref.watch(locationStreamProvider);
-
     return Scaffold(
       appBar: AppBar(
         title: const Text('高精度位置监测'),
@@ -35,7 +30,7 @@ class LocationPage extends ConsumerWidget {
           PopupMenuButton<int>(
             icon: const Icon(Icons.tune),
             tooltip: '调整精度',
-            onSelected: changeAccuracy,
+            onSelected: (value) => locationService.changeAccuracy(value),
             itemBuilder: (context) => [
               const PopupMenuItem(
                 value: 0,
@@ -58,8 +53,9 @@ class LocationPage extends ConsumerWidget {
         serviceStatus: serviceStatus,
         errorMessage: errorMessage,
         accuracyLevel: accuracyLevel,
-        locationData: locationData,
-        retryInitialization: retryInitialization,
+        locationStream: locationService.locationStream,
+        currentLocation: locationService.currentLocation,
+        retryInitialization: locationService.retryInitialization,
       ),
     );
   }
@@ -70,8 +66,9 @@ class LocationPage extends ConsumerWidget {
     required LocationServiceStatus serviceStatus,
     required String? errorMessage,
     required int accuracyLevel,
-    required AsyncValue<Location> locationData,
-    required VoidCallback retryInitialization,
+    required Stream<Location>? locationStream,
+    required Location? currentLocation,
+    required Function() retryInitialization,
   }) {
     // 显示错误信息
     if (serviceStatus == LocationServiceStatus.error) {
@@ -114,27 +111,39 @@ class LocationPage extends ConsumerWidget {
       );
     }
 
-    // 根据位置数据状态显示内容
-    return locationData.when(
-      data: (location) => _buildLocationContent(location, accuracyLevel),
-      loading: () => const Center(child: CircularProgressIndicator()),
-      error: (error, stack) => Center(
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              const Icon(Icons.location_off, size: 48, color: Colors.orange),
-              const SizedBox(height: 16),
-              Text(
-                '获取位置数据失败: $error',
-                textAlign: TextAlign.center,
-                style: const TextStyle(fontSize: 16),
+    // 如果已有当前位置，直接显示
+    if (currentLocation != null) {
+      return _buildLocationContent(currentLocation, accuracyLevel);
+    }
+    
+    // 否则监听位置流
+    return StreamBuilder<Location>(
+      stream: locationStream,
+      builder: (context, snapshot) {
+        if (snapshot.hasData) {
+          return _buildLocationContent(snapshot.data!, accuracyLevel);
+        } else if (snapshot.hasError) {
+          return Center(
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Icon(Icons.location_off, size: 48, color: Colors.orange),
+                  const SizedBox(height: 16),
+                  Text(
+                    '获取位置数据失败: ${snapshot.error}',
+                    textAlign: TextAlign.center,
+                    style: const TextStyle(fontSize: 16),
+                  ),
+                ],
               ),
-            ],
-          ),
-        ),
-      ),
+            ),
+          );
+        } else {
+          return const Center(child: CircularProgressIndicator());
+        }
+      },
     );
   }
 
