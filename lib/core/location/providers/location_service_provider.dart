@@ -83,6 +83,9 @@ class LocationServiceProvider with ChangeNotifier, WidgetsBindingObserver {
         // 应用恢复前台时，检查位置服务状态
         if (_serviceStatus != LocationServiceStatus.active) {
           initializeLocationService();
+        } else {
+          // 如果已经活跃，请求一次最新位置
+          _requestImmediateUpdate();
         }
         break;
       case AppLifecycleState.paused:
@@ -91,6 +94,19 @@ class LocationServiceProvider with ChangeNotifier, WidgetsBindingObserver {
         break;
       default:
         break;
+    }
+  }
+  
+  /// 请求立即更新位置
+  Future<void> _requestImmediateUpdate() async {
+    try {
+      final lastLocationResult = await _repository.getLastLocation();
+      if (lastLocationResult.isSuccess && lastLocationResult.data != null) {
+        _updateLocation(lastLocationResult.data!);
+      }
+    } catch (e) {
+      // 忽略错误，不影响主流程
+      debugPrint('请求立即更新位置失败: $e');
     }
   }
 
@@ -136,7 +152,7 @@ class LocationServiceProvider with ChangeNotifier, WidgetsBindingObserver {
       // 尝试预热获取一次位置以确保流程正常
       final lastLocationResult = await _repository.getLastLocation();
       if (lastLocationResult.isSuccess && lastLocationResult.data != null) {
-        _currentLocation = lastLocationResult.data;
+        _updateLocation(lastLocationResult.data!);
       }
       
       // 启动位置监听
@@ -166,13 +182,27 @@ class LocationServiceProvider with ChangeNotifier, WidgetsBindingObserver {
     _locationStream = _locationStreamController?.stream;
     
     // 订阅位置更新
-    _locationSubscription = _repository.getLocationUpdates().listen((result) {
-      if (result.isSuccess && result.data != null) {
-        _currentLocation = result.data;
-        _locationStreamController?.add(result.data!);
+    _locationSubscription = _repository.getLocationUpdates().listen(
+      (result) {
+        if (result.isSuccess && result.data != null) {
+          _updateLocation(result.data!);
+        }
+      },
+      onError: (error) {
+        _errorMessage = '位置更新出错: $error';
+        notifyListeners();
       }
-    });
+    );
+  }
+  
+  /// 更新位置并通知监听器
+  void _updateLocation(Location location) {
+    _currentLocation = location;
     
+    // 添加到流中
+    _locationStreamController?.add(location);
+    
+    // 通知监听器UI需要更新
     notifyListeners();
   }
 
@@ -197,6 +227,9 @@ class LocationServiceProvider with ChangeNotifier, WidgetsBindingObserver {
       if (result.isFailure) {
         _errorMessage = result.error!.message;
         notifyListeners();
+      } else {
+        // 精度变更后立即请求位置更新
+        _requestImmediateUpdate();
       }
     } catch (e) {
       _errorMessage = '设置位置精度失败: $e';
@@ -233,6 +266,10 @@ class LocationServiceProvider with ChangeNotifier, WidgetsBindingObserver {
     try {
       final result = await _repository.getLastLocation();
       if (result.isSuccess) {
+        // 如果成功获取位置，更新当前状态
+        if (result.data != null) {
+          _updateLocation(result.data!);
+        }
         return result.data;
       }
     } catch (e) {

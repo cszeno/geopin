@@ -14,49 +14,51 @@ class LocationPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // 获取位置服务提供者
-    final locationService = Provider.of<LocationServiceProvider>(context);
-    
-    // 监听位置服务状态
-    final serviceStatus = locationService.serviceStatus;
-    final errorMessage = locationService.errorMessage;
-    final accuracyLevel = locationService.accuracyLevel;
-    
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('高精度位置监测'),
-        actions: [
-          // 精度切换按钮
-          PopupMenuButton<int>(
-            icon: const Icon(Icons.tune),
-            tooltip: '调整精度',
-            onSelected: (value) => locationService.changeAccuracy(value),
-            itemBuilder: (context) => [
-              const PopupMenuItem(
-                value: 0,
-                child: Text('低精度 (省电)'),
-              ),
-              const PopupMenuItem(
-                value: 1,
-                child: Text('平衡精度'),
-              ),
-              const PopupMenuItem(
-                value: 2,
-                child: Text('高精度 (最准确)'),
+    // 使用监听构建器确保能够响应更新
+    return Consumer<LocationServiceProvider>(
+      builder: (context, locationService, _) {
+        // 监听位置服务状态
+        final serviceStatus = locationService.serviceStatus;
+        final errorMessage = locationService.errorMessage;
+        final accuracyLevel = locationService.accuracyLevel;
+        
+        return Scaffold(
+          appBar: AppBar(
+            title: const Text('高精度位置监测'),
+            actions: [
+              // 精度切换按钮
+              PopupMenuButton<int>(
+                icon: const Icon(Icons.tune),
+                tooltip: '调整精度',
+                onSelected: (value) => locationService.changeAccuracy(value),
+                itemBuilder: (context) => [
+                  const PopupMenuItem(
+                    value: 0,
+                    child: Text('低精度 (省电)'),
+                  ),
+                  const PopupMenuItem(
+                    value: 1,
+                    child: Text('平衡精度'),
+                  ),
+                  const PopupMenuItem(
+                    value: 2,
+                    child: Text('高精度 (最准确)'),
+                  ),
+                ],
               ),
             ],
           ),
-        ],
-      ),
-      body: _buildBody(
-        context: context,
-        serviceStatus: serviceStatus,
-        errorMessage: errorMessage,
-        accuracyLevel: accuracyLevel,
-        locationStream: locationService.locationStream,
-        currentLocation: locationService.currentLocation,
-        retryInitialization: locationService.retryInitialization,
-      ),
+          body: _buildBody(
+            context: context,
+            serviceStatus: serviceStatus,
+            errorMessage: errorMessage,
+            accuracyLevel: accuracyLevel,
+            locationStream: locationService.locationStream,
+            currentLocation: locationService.currentLocation,
+            retryInitialization: locationService.retryInitialization,
+          ),
+        );
+      },
     );
   }
 
@@ -111,12 +113,17 @@ class LocationPage extends StatelessWidget {
       );
     }
 
-    // 如果已有当前位置，直接显示
+    // 如果已有当前位置，优先显示
     if (currentLocation != null) {
-      return _buildLocationContent(currentLocation, accuracyLevel);
+      // 同时监听流以获取更新
+      return _buildLocationWithUpdates(
+        currentLocation: currentLocation, 
+        locationStream: locationStream,
+        accuracyLevel: accuracyLevel
+      );
     }
     
-    // 否则监听位置流
+    // 否则仅监听位置流
     return StreamBuilder<Location>(
       stream: locationStream,
       builder: (context, snapshot) {
@@ -143,6 +150,27 @@ class LocationPage extends StatelessWidget {
         } else {
           return const Center(child: CircularProgressIndicator());
         }
+      },
+    );
+  }
+  
+  /// 构建位置内容，并监听更新
+  Widget _buildLocationWithUpdates({
+    required Location currentLocation,
+    required Stream<Location>? locationStream,
+    required int accuracyLevel,
+  }) {
+    if (locationStream == null) {
+      return _buildLocationContent(currentLocation, accuracyLevel);
+    }
+    
+    return StreamBuilder<Location>(
+      stream: locationStream,
+      initialData: currentLocation,
+      builder: (context, snapshot) {
+        // 显示最新的位置数据
+        final location = snapshot.data ?? currentLocation;
+        return _buildLocationContent(location, accuracyLevel);
       },
     );
   }
