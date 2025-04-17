@@ -1,7 +1,5 @@
 import 'dart:async';
 
-import '../../../error/failures.dart';
-import '../../../utils/result.dart';
 import '../../domain/entities/location.dart';
 import '../../domain/repositories/location_repository.dart';
 import '../datasources/location_data_source.dart';
@@ -15,97 +13,67 @@ class LocationRepositoryImpl implements LocationRepository {
   LocationRepositoryImpl(this._dataSource);
 
   @override
-  Future<Result<bool>> initLocationService() async {
+  Future<bool> initLocationService() async {
     try {
-      final bool initialized = await _dataSource.initLocationService();
-      if (!initialized) {
-        return Result.failure(LocationFailure.serviceInitFailed());
-      }
-      return Result.success(true);
+      return await _dataSource.initLocationService();
     } catch (e) {
-      return Result.failure(
-        LocationFailure.general(message: '初始化位置服务失败: $e'),
-      );
+      print('初始化位置服务失败: $e');
+      return false;
     }
   }
 
   @override
-  Future<Result<bool>> setLocationAccuracy(int accuracy) async {
+  Future<bool> setLocationAccuracy(int accuracy) async {
     try {
-      final bool success = await _dataSource.setLocationAccuracy(accuracy);
-      return Result.success(success);
+      return await _dataSource.setLocationAccuracy(accuracy);
     } catch (e) {
-      return Result.failure(
-        LocationFailure.general(message: '设置位置精度失败: $e'),
-      );
+      print('设置位置精度失败: $e');
+      return false;
     }
   }
 
   @override
-  Stream<Result<Location>> getLocationUpdates() {
+  Stream<Location> getLocationUpdates() {
     try {
-      // 使用正确的方式处理流中的错误
-      final stream = _dataSource.startLocationUpdates().map<Result<Location>>((locationData) {
+      // 将数据源的Map转换为Location实体
+      return _dataSource.startLocationUpdates().map((locationData) {
         try {
-          return Result.success(Location.fromMap(locationData));
+          return Location.fromMap(locationData);
         } catch (e) {
-          return Result.failure(
-            LocationFailure.general(message: '解析位置数据失败: $e'),
-          );
+          print('解析位置数据失败: $e');
+          throw Exception('解析位置数据失败: $e');
         }
       });
-      
-      // 使用transform方法处理流中的错误
-      return stream.transform(
-        StreamTransformer<Result<Location>, Result<Location>>.fromHandlers(
-          handleError: (error, stackTrace, sink) {
-            // 将错误转换为失败的Result并添加到流中
-            sink.add(Result.failure(
-              error is LocationFailure
-                  ? error
-                  : LocationFailure.general(message: '位置更新错误: $error'),
-            ));
-          },
-        ),
-      );
     } catch (e) {
-      // 创建只包含一个错误的流
-      return Stream.value(
-        Result.failure(
-          LocationFailure.general(message: '启动位置更新失败: $e'),
-        ),
-      );
+      print('获取位置更新失败: $e');
+      // 发生错误时返回空流
+      return Stream.empty();
     }
   }
 
   @override
-  Future<Result<Location>> getLastLocation() async {
+  Future<Location?> getLastLocation() async {
     try {
       final Map<String, dynamic>? locationData = await _dataSource.getLastLocation();
       
       if (locationData == null) {
-        return Result.failure(
-          LocationFailure.general(message: '没有获取到位置信息'),
-        );
+        return null;
       }
       
-      return Result.success(Location.fromMap(locationData));
+      return Location.fromMap(locationData);
     } catch (e) {
-      return Result.failure(
-        LocationFailure.general(message: '获取最后位置失败: $e'),
-      );
+      print('获取最后位置失败: $e');
+      return null;
     }
   }
 
   @override
-  Future<Result<bool>> stopLocationUpdates() async {
+  Future<bool> stopLocationUpdates() async {
     try {
-      final bool success = await _dataSource.stopLocationUpdates();
-      return Result.success(success);
+      return await _dataSource.stopLocationUpdates();
     } catch (e) {
-      return Result.failure(
-        LocationFailure.general(message: '停止位置更新失败: $e'),
-      );
+      print('停止位置更新失败: $e');
+      return false;
     }
   }
 } 

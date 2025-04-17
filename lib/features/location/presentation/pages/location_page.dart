@@ -17,11 +17,7 @@ class LocationPage extends StatelessWidget {
     // 使用监听构建器确保能够响应更新
     return Consumer<LocationServiceProvider>(
       builder: (context, locationService, _) {
-        // 监听位置服务状态
-        final serviceStatus = locationService.serviceStatus;
-        final errorMessage = locationService.errorMessage;
-        final accuracyLevel = locationService.accuracyLevel;
-        
+
         return Scaffold(
           appBar: AppBar(
             title: const Text('高精度位置监测'),
@@ -50,12 +46,10 @@ class LocationPage extends StatelessWidget {
           ),
           body: _buildBody(
             context: context,
-            serviceStatus: serviceStatus,
-            errorMessage: errorMessage,
-            accuracyLevel: accuracyLevel,
             locationStream: locationService.locationStream,
             currentLocation: locationService.currentLocation,
             retryInitialization: locationService.retryInitialization,
+            accuracyLevel: locationService.accuracyLevel,
           ),
         );
       },
@@ -65,54 +59,11 @@ class LocationPage extends StatelessWidget {
   /// 构建页面主体
   Widget _buildBody({
     required BuildContext context,
-    required LocationServiceStatus serviceStatus,
-    required String? errorMessage,
     required int accuracyLevel,
     required Stream<Location>? locationStream,
     required Location? currentLocation,
     required Function() retryInitialization,
   }) {
-    // 显示错误信息
-    if (serviceStatus == LocationServiceStatus.error) {
-      return Center(
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              const Icon(Icons.error_outline, size: 48, color: Colors.red),
-              const SizedBox(height: 16),
-              Text(
-                errorMessage ?? '位置服务发生错误',
-                textAlign: TextAlign.center,
-                style: const TextStyle(fontSize: 16),
-              ),
-              const SizedBox(height: 24),
-              ElevatedButton(
-                onPressed: retryInitialization,
-                child: const Text('重试'),
-              ),
-            ],
-          ),
-        ),
-      );
-    }
-
-    // 显示加载中
-    if (serviceStatus == LocationServiceStatus.initializing || 
-        serviceStatus == LocationServiceStatus.uninitialized) {
-      return const Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            CircularProgressIndicator(),
-            SizedBox(height: 16),
-            Text('正在初始化位置服务...'),
-          ],
-        ),
-      );
-    }
-
     // 如果已有当前位置，优先显示
     if (currentLocation != null) {
       // 同时监听流以获取更新

@@ -20,18 +20,17 @@ enum LocationServiceStatus {
 }
 
 /// 位置服务提供者
-/// 使用ChangeNotifier替代Riverpod实现状态管理
 class LocationServiceProvider with ChangeNotifier, WidgetsBindingObserver {
   final LocationRepository _repository;
   
   // 位置服务状态
   LocationServiceStatus _serviceStatus = LocationServiceStatus.uninitialized;
   LocationServiceStatus get serviceStatus => _serviceStatus;
-  
+
   // 错误消息
   String? _errorMessage;
   String? get errorMessage => _errorMessage;
-  
+
   // 位置精度 (0-低, 1-平衡, 2-高)
   int _accuracyLevel = 2; // 默认高精度
   int get accuracyLevel => _accuracyLevel;
@@ -100,9 +99,9 @@ class LocationServiceProvider with ChangeNotifier, WidgetsBindingObserver {
   /// 请求立即更新位置
   Future<void> _requestImmediateUpdate() async {
     try {
-      final lastLocationResult = await _repository.getLastLocation();
-      if (lastLocationResult.isSuccess && lastLocationResult.data != null) {
-        _updateLocation(lastLocationResult.data!);
+      final location = await _repository.getLastLocation();
+      if (location != null) {
+        _updateLocation(location);
       }
     } catch (e) {
       // 忽略错误，不影响主流程
@@ -137,10 +136,10 @@ class LocationServiceProvider with ChangeNotifier, WidgetsBindingObserver {
     
     try {
       // 初始化服务
-      final initResult = await _repository.initLocationService();
-      if (initResult.isFailure) {
+      final initialized = await _repository.initLocationService();
+      if (!initialized) {
         _serviceStatus = LocationServiceStatus.error;
-        _errorMessage = initResult.error!.message;
+        _errorMessage = '位置服务初始化失败';
         _cancelInitTimeout();
         notifyListeners();
         return;
@@ -150,9 +149,9 @@ class LocationServiceProvider with ChangeNotifier, WidgetsBindingObserver {
       await _repository.setLocationAccuracy(_accuracyLevel);
 
       // 尝试预热获取一次位置以确保流程正常
-      final lastLocationResult = await _repository.getLastLocation();
-      if (lastLocationResult.isSuccess && lastLocationResult.data != null) {
-        _updateLocation(lastLocationResult.data!);
+      final lastLocation = await _repository.getLastLocation();
+      if (lastLocation != null) {
+        _updateLocation(lastLocation);
       }
       
       // 启动位置监听
@@ -183,10 +182,8 @@ class LocationServiceProvider with ChangeNotifier, WidgetsBindingObserver {
     
     // 订阅位置更新
     _locationSubscription = _repository.getLocationUpdates().listen(
-      (result) {
-        if (result.isSuccess && result.data != null) {
-          _updateLocation(result.data!);
-        }
+      (location) {
+        _updateLocation(location);
       },
       onError: (error) {
         _errorMessage = '位置更新出错: $error';
@@ -222,10 +219,10 @@ class LocationServiceProvider with ChangeNotifier, WidgetsBindingObserver {
     
     try {
       // 调用设置精度
-      final result = await _repository.setLocationAccuracy(accuracy);
+      final success = await _repository.setLocationAccuracy(accuracy);
       
-      if (result.isFailure) {
-        _errorMessage = result.error!.message;
+      if (!success) {
+        _errorMessage = '设置位置精度失败';
         notifyListeners();
       } else {
         // 精度变更后立即请求位置更新
@@ -264,18 +261,16 @@ class LocationServiceProvider with ChangeNotifier, WidgetsBindingObserver {
   /// 获取最后一次位置
   Future<Location?> getLastLocation() async {
     try {
-      final result = await _repository.getLastLocation();
-      if (result.isSuccess) {
-        // 如果成功获取位置，更新当前状态
-        if (result.data != null) {
-          _updateLocation(result.data!);
-        }
-        return result.data;
+      final location = await _repository.getLastLocation();
+      // 如果成功获取位置，更新当前状态
+      if (location != null) {
+        _updateLocation(location);
       }
+      return location;
     } catch (e) {
       _errorMessage = '获取最后位置失败: $e';
       notifyListeners();
+      return null;
     }
-    return null;
   }
 } 

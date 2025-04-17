@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import '../../../utils/result.dart';
 import '../entities/location.dart';
 import '../repositories/location_repository.dart';
 
@@ -14,7 +13,7 @@ class GetLocationUpdates {
   /// 执行用例
   /// 
   /// 返回位置数据流
-  Stream<Result<Location>> call() {
+  Stream<Location> call() {
     return _repository.getLocationUpdates();
   }
 } 

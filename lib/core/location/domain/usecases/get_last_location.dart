@@ -1,4 +1,3 @@
-import '../../../utils/result.dart';
 import '../entities/location.dart';
 import '../repositories/location_repository.dart';
 
@@ -11,8 +10,8 @@ class GetLastLocation {
 
   /// 执行用例
   /// 
-  /// 返回最后一次位置的结果
-  Future<Result<Location>> call() async {
+  /// 返回最后一次位置数据，如果无法获取返回null
+  Future<Location?> call() async {
     return _repository.getLastLocation();
   }
 } 
