@@ -50,7 +50,9 @@ class _SplashPageState extends State<SplashPage>
       // 如果在权限请求期间没有错误，继续导航
       if (mounted && _errorMessage == null) {
         await Future.delayed(const Duration(milliseconds: 300));
-        context.go('/');
+        if (mounted) {
+          context.go('/');
+        }
       }
     } catch (e) {
       if (mounted) {

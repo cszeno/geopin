@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:geopin/features/log/presentation/pages/log_viewer_page.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../features/location/presentation/pages/location_page.dart';
@@ -24,6 +25,13 @@ class AppRouter {
         GoRoute(
           path: '/',
           builder: (context, state) => const LocationPage(),
+          routes: [
+            // 日志界面 - 作为主页的子路由
+            GoRoute(
+              path: 'log',
+              builder: (context, state) => const LogViewerPage(),
+            ),
+          ],
         ),
       ],
       errorBuilder: (context, state) => Scaffold(

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
 import '../../../../core/location/domain/entities/location.dart';
@@ -6,6 +7,7 @@ import '../../../../core/location/providers/location_service_provider.dart';
 import '../widgets/accuracy_indicator.dart';
 import '../widgets/location_card.dart';
 import '../widgets/location_detail_card.dart';
+
 
 /// 位置显示页面
 class LocationPage extends StatelessWidget {
@@ -22,6 +24,13 @@ class LocationPage extends StatelessWidget {
           appBar: AppBar(
             title: const Text('高精度位置监测'),
             actions: [
+              IconButton(
+                onPressed: () {
+                  context.push('/log');
+                }, 
+                icon: Icon(Icons.description),
+                tooltip: '查看日志',
+              ),
               // 精度切换按钮
               PopupMenuButton<int>(
                 icon: const Icon(Icons.tune),
