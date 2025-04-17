@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:geopin/core/i18n/app_localizations_extension.dart';
 
 import '../../../../core/location/domain/entities/location.dart';
 
@@ -22,9 +23,9 @@ class LocationCard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
-              '当前位置',
-              style: TextStyle(
+            Text(
+              context.l10n.currentLocation,
+              style: const TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
               ),
@@ -34,30 +35,33 @@ class LocationCard extends StatelessWidget {
 
             // 纬度
             _buildLocationRow(
+              context: context,
               icon: Icons.north,
-              title: '纬度',
+              title: context.l10n.latitude,
               value: '${location.latitude.toStringAsFixed(8)}°',
-              subtitle: location.latitude > 0 ? '北纬' : '南纬',
+              subtitle: location.latitude > 0 ? context.l10n.north : context.l10n.south,
             ),
 
             const SizedBox(height: 12),
 
             // 经度
             _buildLocationRow(
+              context: context,
               icon: Icons.east,
-              title: '经度',
+              title: context.l10n.longitude,
               value: '${location.longitude.toStringAsFixed(8)}°',
-              subtitle: location.longitude > 0 ? '东经' : '西经',
+              subtitle: location.longitude > 0 ? context.l10n.east : context.l10n.west,
             ),
 
             const SizedBox(height: 12),
 
             // 海拔
             _buildLocationRow(
+              context: context,
               icon: Icons.height,
-              title: '海拔',
-              value: '${location.altitude.toStringAsFixed(2)}米',
-              subtitle: '相对海平面',
+              title: context.l10n.altitude,
+              value: '${location.altitude.toStringAsFixed(2)}${context.l10n.meters}',
+              subtitle: context.l10n.relativeToSeaLevel,
             ),
 
             const SizedBox(height: 8),
@@ -67,7 +71,7 @@ class LocationCard extends StatelessWidget {
             Align(
               alignment: Alignment.centerRight,
               child: Text(
-                '更新时间: ${_formatTime(location.timestamp)}',
+                context.l10n.updateTime(_formatTime(context, location.timestamp)),
                 style: TextStyle(
                   fontSize: 12,
                   color: Colors.grey[600],
@@ -82,6 +86,7 @@ class LocationCard extends StatelessWidget {
 
   /// 构建位置数据行
   Widget _buildLocationRow({
+    required BuildContext context,
     required IconData icon,
     required String title,
     required String value,
@@ -131,12 +136,12 @@ class LocationCard extends StatelessWidget {
   }
 
   /// 格式化时间戳
-  String _formatTime(int timestamp) {
+  String _formatTime(BuildContext context, int timestamp) {
     try {
       final DateTime dateTime = DateTime.fromMillisecondsSinceEpoch(timestamp);
       return '${_twoDigits(dateTime.hour)}:${_twoDigits(dateTime.minute)}:${_twoDigits(dateTime.second)}';
     } catch (e) {
-      return '未知';
+      return context.l10n.unknown;
     }
   }
 

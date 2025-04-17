@@ -1,5 +1,5 @@
 import 'package:flutter/services.dart';
-import 'package:geopin/core/constants/permission_constant.dart';
+import 'package:geopin/core/constants/app_constant.dart';
 import 'package:geopin/core/utils/app_logger.dart';
 
 class PermissionUtil {
@@ -12,13 +12,10 @@ class PermissionUtil {
 
   PermissionUtil._internal();
 
-  // 跟踪初始化状态
-  bool _isInitialized = false;
-
   // 检查位置权限
   Future<bool> checkLocationPermission() async {
     try {
-      final bool hasPermission = await PermissionConstant().methodChannel
+      final bool hasPermission = await AppConstant().permissionMethodChannel
           .invokeMethod('checkLocationPermission');
       return hasPermission;
     } on PlatformException catch (e) {
@@ -31,7 +28,7 @@ class PermissionUtil {
   // 请求位置权限
   Future<bool> requestLocationPermission() async {
     try {
-      final bool granted = await PermissionConstant().methodChannel
+      final bool granted = await AppConstant().permissionMethodChannel
           .invokeMethod('requestLocationPermission');
       return granted;
     } on PlatformException catch (e) {

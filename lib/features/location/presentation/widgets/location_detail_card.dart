@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:geopin/core/i18n/app_localizations_extension.dart';
 
 import '../../../../core/location/domain/entities/location.dart';
 
@@ -19,7 +20,7 @@ class LocationDetailCard extends StatelessWidget {
     final double speed = location.speed ?? 0.0;
     final double bearing = location.bearing ?? 0.0;
     final double verticalAccuracy = location.verticalAccuracy ?? 0.0;
-    final String provider = location.provider ?? '未知';
+    final String provider = location.provider ?? context.l10n.unknown;
 
     return Card(
       elevation: 4,
@@ -28,9 +29,9 @@ class LocationDetailCard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
-              '详细信息',
-              style: TextStyle(
+            Text(
+              context.l10n.detailedInfo,
+              style: const TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
               ),
@@ -40,45 +41,52 @@ class LocationDetailCard extends StatelessWidget {
 
             // 速度
             _buildDetailRow(
-              title: '速度',
+              context: context,
+              title: context.l10n.speed,
               value: '${(speed * 3.6).toStringAsFixed(2)} km/h',
             ),
 
             // 方向
             _buildDetailRow(
-              title: '方向',
+              context: context,
+              title: context.l10n.direction,
               value: '${bearing.toStringAsFixed(1)}°',
             ),
 
             // 水平精度
             _buildDetailRow(
-              title: '水平精度',
-              value: '±${location.accuracy.toStringAsFixed(2)}米',
+              context: context,
+              title: context.l10n.horizontalAccuracy,
+              value: '±${location.accuracy.toStringAsFixed(2)}${context.l10n.meters}',
             ),
 
             // 垂直精度
             _buildDetailRow(
-              title: '垂直精度',
-              value: '±${verticalAccuracy.toStringAsFixed(2)}米',
+              context: context,
+              title: context.l10n.verticalAccuracy,
+              value: '±${verticalAccuracy.toStringAsFixed(2)}${context.l10n.meters}',
             ),
 
             // 提供者
             _buildDetailRow(
-              title: '位置提供者',
+              context: context,
+              title: context.l10n.locationProvider,
               value: provider,
             ),
 
             // 速度精度
             if (location.speedAccuracy != null)
               _buildDetailRow(
-                title: '速度精度',
+                context: context,
+                title: context.l10n.speedAccuracy,
                 value: '±${location.speedAccuracy!.toStringAsFixed(2)} m/s',
               ),
 
             // 方向精度
             if (location.bearingAccuracy != null)
               _buildDetailRow(
-                title: '方向精度',
+                context: context,
+                title: context.l10n.directionAccuracy,
                 value: '±${location.bearingAccuracy!.toStringAsFixed(2)}°',
               ),
           ],
@@ -89,6 +97,7 @@ class LocationDetailCard extends StatelessWidget {
 
   /// 构建详细信息行
   Widget _buildDetailRow({
+    required BuildContext context,
     required String title,
     required String value,
   }) {

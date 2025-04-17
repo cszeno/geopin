@@ -1,0 +1,17 @@
+# 禁用合成包，使用源代码中生成的文件
+synthetic-package: false
+
+# ARB文件的目录
+arb-dir: lib/core/i18n/l10n
+
+# 模板ARB文件（中文作为模板）
+template-arb-file: app_zh.arb
+
+# 生成文件的名称
+output-localization-file: app_localizations.dart
+
+# 生成的本地化类名称
+output-class: AppLocalizations
+
+# 输出目录（生成的文件将放在这里）
+output-dir: lib/core/i18n/generated 

@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:flutter/services.dart';
+import 'package:geopin/core/constants/app_constant.dart';
 
 import '../../../../core/utils/app_logger.dart';
 import 'location_data_source.dart';
@@ -7,8 +8,8 @@ import 'location_data_source.dart';
 /// 通过平台通道实现的位置数据源
 class PlatformLocationDataSource implements LocationDataSource {
   // 定义平台通道
-  static const MethodChannel _methodChannel = MethodChannel('cn.geopin.geopin/location_method');
-  static const EventChannel _eventChannel = EventChannel('cn.geopin.geopin/location_event');
+  static final MethodChannel _methodChannel = AppConstant().locationMethodChannel;
+  static final EventChannel _eventChannel = AppConstant().locationEventChannel;
 
   // 位置流控制器
   StreamController<Map<String, dynamic>>? _locationController;

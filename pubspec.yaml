@@ -42,8 +42,13 @@ dependencies:
   provider: ^6.1.4
   path_provider: ^2.1.5
   logging: ^1.3.0
-  intl: ^0.20.2
+  intl: ^0.19.0
   share_plus: ^10.1.4
+
+  # 添加本地化支持
+  flutter_localizations:
+    sdk: flutter
+  shared_preferences: ^2.5.3
 
 dev_dependencies:
   flutter_test:
@@ -61,6 +66,8 @@ dev_dependencies:
 
 # The following section is specific to Flutter packages.
 flutter:
+  # Generate the localization code
+  generate: true
 
   # The following line ensures that the Material Icons font is
   # included with your application, so that you can use the icons in

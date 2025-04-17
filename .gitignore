@@ -43,3 +43,31 @@ app.*.map.json
 /android/app/debug
 /android/app/profile
 /android/app/release
+
+# Generated localization files
+lib/core/i18n/generated/
+
+# Temporary files
+*.tmp
+*.temp
+*.bak
+
+# Log files created by the app
+/logs/
+
+# File system storage for user data
+/storage/
+
+# Environment configuration files (may contain sensitive info)
+.env
+.env.local
+
+# Generated JSON files
+**/*.g.dart
+**/*.freezed.dart
+
+# Flutter Version Management (fvm)
+.fvm/flutter_sdk
+
+# Coverage report
+coverage/

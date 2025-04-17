@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:share_plus/share_plus.dart';
+import 'package:geopin/core/i18n/app_localizations_extension.dart';
 
 import '../../../../core/utils/app_logger.dart';
 
@@ -255,12 +256,12 @@ class _LogViewerPageState extends State<LogViewerPage> {
                 // 日志内容
                 Expanded(
                   child: _selectedFile == null
-                      ? const Center(child: Text('请选择一个日志文件'))
+                      ? Center(child: Text(context.l10n.selectLogFile))
                       : SingleChildScrollView(
                           padding: const EdgeInsets.all(16),
                           child: SelectableText(
                             _currentLogContent.isEmpty
-                                ? '日志文件为空'
+                                ? context.l10n.emptyLogFile
                                 : _currentLogContent,
                             style: const TextStyle(
                               fontFamily: 'monospace',

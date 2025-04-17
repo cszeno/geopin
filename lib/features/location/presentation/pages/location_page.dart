@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
+import 'package:geopin/core/i18n/app_localizations_extension.dart';
 
 import '../../../../core/location/domain/entities/location.dart';
 import '../../../../core/location/providers/location_service_provider.dart';
@@ -22,32 +23,41 @@ class LocationPage extends StatelessWidget {
 
         return Scaffold(
           appBar: AppBar(
-            title: const Text('高精度位置监测'),
+            title: Text(context.l10n.appTitle),
             actions: [
+              // 设置按钮
               IconButton(
+                icon: const Icon(Icons.settings),
+                tooltip: context.l10n.settings,
                 onPressed: () {
-                  context.push('/log');
-                }, 
-                icon: Icon(Icons.description),
-                tooltip: '查看日志',
+                  context.go('/settings');
+                },
+              ),
+              // 日志查看按钮
+              IconButton(
+                icon: const Icon(Icons.info_outline),
+                tooltip: 'Log',
+                onPressed: () {
+                  context.go('/log');
+                },
               ),
               // 精度切换按钮
               PopupMenuButton<int>(
                 icon: const Icon(Icons.tune),
-                tooltip: '调整精度',
+                tooltip: context.l10n.adjustAccuracy,
                 onSelected: (value) => locationService.changeAccuracy(value),
                 itemBuilder: (context) => [
-                  const PopupMenuItem(
+                  PopupMenuItem(
                     value: 0,
-                    child: Text('低精度 (省电)'),
+                    child: Text(context.l10n.lowAccuracy),
                   ),
-                  const PopupMenuItem(
+                  PopupMenuItem(
                     value: 1,
-                    child: Text('平衡精度'),
+                    child: Text(context.l10n.balancedAccuracy),
                   ),
-                  const PopupMenuItem(
+                  PopupMenuItem(
                     value: 2,
-                    child: Text('高精度 (最准确)'),
+                    child: Text(context.l10n.highAccuracy),
                   ),
                 ],
               ),
@@ -99,7 +109,7 @@ class LocationPage extends StatelessWidget {
                   const Icon(Icons.location_off, size: 48, color: Colors.orange),
                   const SizedBox(height: 16),
                   Text(
-                    '获取位置数据失败: ${snapshot.error}',
+                    context.l10n.failedToGetLocation(snapshot.error.toString()),
                     textAlign: TextAlign.center,
                     style: const TextStyle(fontSize: 16),
                   ),

@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:geopin/core/i18n/app_localizations_extension.dart';
 
 import '../../../../core/utils/primission_util.dart';
 
@@ -210,7 +211,7 @@ class _SplashPageState extends State<SplashPage>
     return Column(
       children: [
         Text(
-          'GeoPin',
+          context.l10n.appTitle,
           style: theme.textTheme.headlineLarge?.copyWith(
             fontWeight: FontWeight.bold,
             color: colorScheme.primary,
@@ -220,7 +221,7 @@ class _SplashPageState extends State<SplashPage>
         const SizedBox(height: 8),
         
         Text(
-          '高精度位置监测',
+          context.l10n.highPrecisionLocation,
           style: theme.textTheme.titleMedium?.copyWith(
             color: theme.colorScheme.onBackground.withOpacity(0.8),
           ),

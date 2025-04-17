@@ -1,0 +1,166 @@
+{
+  "@@locale": "zh",
+  "appTitle": "地图标记",
+  "home": "首页",
+  "map": "地图",
+  "profile": "我的",
+  "settings": "设置",
+  
+  "locationPermission": "位置权限",
+  "locationPermissionRequired": "需要位置权限才能使用此功能",
+  "allowLocation": "允许位置权限",
+  "locationDenied": "位置权限已被拒绝",
+  "locationPermanentlyDenied": "位置权限已被永久拒绝，请在设置中手动开启",
+  
+  "language": "语言",
+  "english": "英文",
+  "chinese": "中文",
+  "systemDefault": "跟随系统",
+  
+  "theme": "主题",
+  "lightTheme": "浅色",
+  "darkTheme": "深色",
+  
+  "save": "保存",
+  "cancel": "取消",
+  "delete": "删除",
+  "edit": "编辑",
+  "confirm": "确认",
+  
+  "addPin": "添加标记",
+  "editPin": "编辑标记",
+  "pinName": "标记名称",
+  "pinDescription": "标记描述",
+  "pinLocation": "标记位置",
+  
+  "error": "错误",
+  "success": "成功",
+  "loading": "加载中",
+  "retry": "重试",
+  
+  "noDataAvailable": "暂无数据",
+  "searchHint": "搜索地点...",
+  
+  "aboutApp": "关于应用",
+  "appDescription": "一款高精度位置标记应用",
+  "themeSettingDevelopment": "主题设置功能开发中",
+  
+  "currentLocation": "当前位置",
+  "detailedInfo": "详细信息",
+  "latitude": "纬度",
+  "longitude": "经度",
+  "altitude": "海拔",
+  "relativeToSeaLevel": "相对海平面",
+  "north": "北纬",
+  "south": "南纬",
+  "east": "东经",
+  "west": "西经",
+  "updateTime": "更新时间：{time}",
+  "unknown": "未知",
+  
+  "speed": "速度",
+  "direction": "方向",
+  "horizontalAccuracy": "水平精度",
+  "verticalAccuracy": "垂直精度",
+  "locationProvider": "位置提供者",
+  "speedAccuracy": "速度精度",
+  "directionAccuracy": "方向精度",
+  "meters": "米",
+  "kmPerHour": "{speed} km/h",
+  "plusMinusMeters": "±{accuracy}米",
+  "plusMinusSpeed": "±{accuracy} m/s",
+  "plusMinusDirection": "±{accuracy}°",
+  "degrees": "{degrees}°",
+  
+  "lowAccuracy": "低精度 (省电)",
+  "balancedAccuracy": "平衡精度",
+  "highAccuracy": "高精度 (最准确)",
+  "adjustAccuracy": "调整精度",
+  
+  "highPrecisionLocation": "高精度位置监测",
+  "loadingProgress": "{progress}%",
+  "selectLogFile": "请选择一个日志文件",
+  "emptyLogFile": "日志文件为空",
+  "failedToGetLocation": "获取位置数据失败: {error}",
+  "pageNotFound": "页面不存在",
+  "pathNotFound": "找不到路径: {path}",
+  
+  "@updateTime": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "@kmPerHour": {
+    "placeholders": {
+      "speed": {
+        "type": "String"
+      }
+    }
+  },
+  "@plusMinusMeters": {
+    "placeholders": {
+      "accuracy": {
+        "type": "String"
+      }
+    }
+  },
+  "@plusMinusSpeed": {
+    "placeholders": {
+      "accuracy": {
+        "type": "String"
+      }
+    }
+  },
+  "@plusMinusDirection": {
+    "placeholders": {
+      "accuracy": {
+        "type": "String"
+      }
+    }
+  },
+  "@degrees": {
+    "placeholders": {
+      "degrees": {
+        "type": "String"
+      }
+    }
+  },
+  "@loadingProgress": {
+    "placeholders": {
+      "progress": {
+        "type": "int"
+      }
+    }
+  },
+  "@failedToGetLocation": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "@pathNotFound": {
+    "placeholders": {
+      "path": {
+        "type": "String"
+      }
+    }
+  },
+  "@appTitle": {
+    "description": "应用名称"
+  },
+  "@home": {
+    "description": "首页标签"
+  },
+  "@map": {
+    "description": "地图标签"
+  },
+  "@profile": {
+    "description": "个人资料标签"
+  },
+  "@settings": {
+    "description": "设置标签"
+  }
+} 

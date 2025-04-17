@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'core/i18n/generated/app_localizations.dart';
 import 'package:geopin/core/location/data/datasources/platform_location_data_source.dart';
 import 'package:geopin/core/location/data/repositories/location_repository_impl.dart';
 import 'package:geopin/core/location/domain/repositories/location_repository.dart';
 import 'package:logging/logging.dart';
 import 'package:provider/provider.dart';
 import 'package:geopin/core/location/providers/location_service_provider.dart';
+import 'package:geopin/core/i18n/providers/locale_provider.dart';
 
 import 'core/router/app_router.dart';
 import 'core/theme/app_theme.dart';
@@ -38,6 +41,9 @@ void main() async {
           ChangeNotifierProvider(create: (context) => LocationServiceProvider(
             context.read<LocationRepository>()
           )),
+          
+          // 添加语言设置提供者
+          ChangeNotifierProvider(create: (_) => LocaleProvider()),
         ],
         child: MyApp(),
       )
@@ -51,6 +57,8 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // 获取语言设置
+    final localeProvider = Provider.of<LocaleProvider>(context);
 
     // 使用GoRouter管理路由
     final router = AppRouter.createRouter();
@@ -61,6 +69,20 @@ class MyApp extends StatelessWidget {
       theme: AppTheme.getLightTheme(),
       darkTheme: AppTheme.getDarkTheme(),
       themeMode: ThemeMode.system,
+      
+      // 本地化支持
+      locale: localeProvider.locale,
+      localizationsDelegates: const [
+        AppLocalizations.delegate,
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
+      supportedLocales: const [
+        Locale('zh'), // 中文
+        Locale('en'), // 英文
+      ],
+      
       routerConfig: router,
     );
   }
