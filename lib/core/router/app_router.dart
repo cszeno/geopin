@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:geopin/core/i18n/app_localizations_extension.dart';
+import 'package:geopin/features/home/presentation/pages/home_page.dart';
 import 'package:geopin/features/log/presentation/pages/log_viewer_page.dart';
 import 'package:geopin/features/settings/presentation/pages/language_settings_page.dart';
 import 'package:geopin/features/settings/presentation/pages/settings_page.dart';
@@ -13,7 +14,8 @@ class AppRouter {
   /// 创建路由配置
   static GoRouter createRouter() {
     return GoRouter(
-      initialLocation: '/splash',
+      // initialLocation: '/splash',
+      initialLocation: '/home',
       routes: <RouteBase>[
         // 启动页路由
         GoRoute(
@@ -21,6 +23,15 @@ class AppRouter {
           name: 'splash',
           builder: (BuildContext context, GoRouterState state) {
             return const SplashPage();
+          },
+        ),
+
+        // 主页
+        GoRoute(
+          path: '/home',
+          name: 'home',
+          builder: (BuildContext context, GoRouterState state) {
+            return HomePage();
           },
         ),
         
