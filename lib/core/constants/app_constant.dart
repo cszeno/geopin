@@ -26,4 +26,10 @@ class AppConstant {
   get permissionMethodChannel => _permissionMethodChannel;
   get locationMethodChannel => _locationMethodChannel;
   get locationEventChannel => _locationEventChannel;
+
+
+  /// 类别常量
+  static const String categoryTask = '项目';
+  static const String categoryMeasurement = '测量';
+  static const String categoryTools = '工具';
 }

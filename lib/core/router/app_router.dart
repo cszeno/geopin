@@ -14,8 +14,7 @@ class AppRouter {
   /// 创建路由配置
   static GoRouter createRouter() {
     return GoRouter(
-      // initialLocation: '/splash',
-      initialLocation: '/home',
+      initialLocation: '/splash',
       routes: <RouteBase>[
         // 启动页路由
         GoRoute(
@@ -34,31 +33,25 @@ class AppRouter {
             return HomePage();
           },
         ),
-        
-        // 主页路由 - 位置显示页面
+
+        // 日志界面
         GoRoute(
-          path: '/',
-          builder: (context, state) => const LocationPage(),
-          routes: [
-            // 日志界面 - 作为主页的子路由
-            GoRoute(
-              path: 'log',
-              builder: (context, state) => const LogViewerPage(),
-            ),
-            
-            // 设置页面
-            GoRoute(
-              path: 'settings',
-              builder: (context, state) => const SettingsPage(),
-            ),
-            
-            // 语言设置页面
-            GoRoute(
-              path: 'language-settings',
-              builder: (context, state) => const LanguageSettingsPage(),
-            ),
-          ],
+          path: '/log',
+          builder: (context, state) => const LogViewerPage(),
         ),
+
+        // 设置页面
+        GoRoute(
+          path: '/settings',
+          builder: (context, state) => const SettingsPage(),
+        ),
+        
+        // 位置显示页面
+        GoRoute(
+          path: '/location_test',
+          builder: (context, state) => const LocationPage(),
+        ),
+
       ],
       errorBuilder: (context, state) => Scaffold(
         appBar: AppBar(

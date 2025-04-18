@@ -25,22 +25,6 @@ class LocationPage extends StatelessWidget {
           appBar: AppBar(
             title: Text(context.l10n.appTitle),
             actions: [
-              // 设置按钮
-              IconButton(
-                icon: const Icon(Icons.settings),
-                tooltip: context.l10n.settings,
-                onPressed: () {
-                  context.go('/settings');
-                },
-              ),
-              // 日志查看按钮
-              IconButton(
-                icon: const Icon(Icons.info_outline),
-                tooltip: 'Log',
-                onPressed: () {
-                  context.go('/log');
-                },
-              ),
               // 精度切换按钮
               PopupMenuButton<int>(
                 icon: const Icon(Icons.tune),

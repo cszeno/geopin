@@ -52,7 +52,7 @@ class _SplashPageState extends State<SplashPage>
       if (mounted && _errorMessage == null) {
         await Future.delayed(const Duration(milliseconds: 300));
         if (mounted) {
-          context.go('/');
+          context.go('/home');
         }
       }
     } catch (e) {
