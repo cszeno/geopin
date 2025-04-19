@@ -3,8 +3,8 @@ import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import '../../../../../core/event/event_bus.dart';
-import '../../../../../core/event/event_constants.dart';
 import '../../domain/models/mini_app_model.dart';
+import '../../domain/registry/mini_app_registry.dart';
 import '../provider/mini_app_provider.dart';
 import 'mini_app_icon_widget.dart';
 
@@ -197,16 +197,16 @@ class _DraggableMiniAppGridState extends State<DraggableMiniAppGrid> {
     // 触发小程序点击通用事件
     bus.emit(MiniAppEvent.tapAnyMiniApp, app);
     
-    // 根据小程序类型触发特定事件
-    switch (app.id) {
-      case 'mark_point':
-        bus.emit(MiniAppEvent.tapPointMarker, app);
+    // 根据小程序类型处理点击
+    switch (app.type) {
+      case MiniAppType.eventBus:
+        if (app.eventName != null) {
+          bus.emit(app.eventName!, app);
+        }
         break;
-      case 'mark_line':
-        bus.emit(MiniAppEvent.tapLineMarker, app);
-        break;
+      case MiniAppType.router:
       default:
-        // 对于其他类型，直接使用路由导航
+        // 对于路由类型，直接使用路由导航
         context.push(app.route);
     }
   }

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:geopin/core/constants/mini_app_register.dart';
 import 'package:geopin/core/i18n/app_localizations_extension.dart';
 import 'package:geopin/features/home/presentation/pages/home_page.dart';
 import 'package:geopin/features/log/presentation/pages/log_viewer_page.dart';
@@ -8,6 +7,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../features/location/presentation/pages/location_page.dart';
 import '../../features/splash/presentation/pages/splash_page.dart';
+import '../../features/mini_app/domain/registry/mini_app_registry.dart';
 
 /// 应用路由配置
 class AppRouter {

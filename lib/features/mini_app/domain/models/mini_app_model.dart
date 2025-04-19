@@ -1,5 +1,14 @@
 import 'package:flutter/material.dart';
 
+/// 小程序类型枚举
+enum MiniAppType {
+  /// 使用事件总线处理点击
+  eventBus,
+  
+  /// 使用路由处理点击
+  router
+}
+
 /// 小程序模型类
 ///
 /// 定义应用中小程序的基本结构和属性
@@ -29,6 +38,12 @@ class MiniAppModel {
   /// 小程序是否可用
   final bool isEnabled;
   
+  /// 小程序类型
+  final MiniAppType type;
+  
+  /// 事件名称（仅type为eventBus时有效）
+  final Object? eventName;
+  
   /// 小程序构造函数
   const MiniAppModel({
     required this.id,
@@ -39,6 +54,8 @@ class MiniAppModel {
     required this.route,
     this.priority = 100,
     this.isEnabled = true,
+    this.type = MiniAppType.router,
+    this.eventName,
   });
   
   /// 创建小程序模型的副本并更新属性
@@ -52,6 +69,8 @@ class MiniAppModel {
     String? category,
     int? priority,
     bool? isEnabled,
+    MiniAppType? type,
+    Object? eventName,
   }) {
     return MiniAppModel(
       id: id ?? this.id,
@@ -62,6 +81,8 @@ class MiniAppModel {
       route: route ?? this.route,
       priority: priority ?? this.priority,
       isEnabled: isEnabled ?? this.isEnabled,
+      type: type ?? this.type,
+      eventName: eventName ?? this.eventName,
     );
   }
   
@@ -76,6 +97,8 @@ class MiniAppModel {
       route: json['route'] as String,
       priority: json['priority'] as int? ?? 100,
       isEnabled: json['isEnabled'] as bool? ?? true,
+      // 默认使用router类型
+      type: MiniAppType.router,
     );
   }
   
@@ -102,6 +125,8 @@ class MiniAppModel {
     required String category,
     required String route,
     bool isEnabled = true,
+    MiniAppType type = MiniAppType.router,
+    Object? eventName,
   }) : this(
     id: id,
     name: name,
@@ -110,5 +135,7 @@ class MiniAppModel {
     backgroundColor: color, // 自动使用前景色作为背景色
     route: route,
     isEnabled: isEnabled,
+    type: type,
+    eventName: eventName,
   );
 } 

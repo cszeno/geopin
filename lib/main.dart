@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:geopin/shared/features/mini_app/presentation/provider/mini_app_provider.dart';
-import 'core/constants/mini_app_register.dart';
 import 'core/i18n/generated/app_localizations.dart';
 import 'package:geopin/core/location/data/datasources/platform_location_data_source.dart';
 import 'package:geopin/core/location/data/repositories/location_repository_impl.dart';
@@ -15,6 +13,8 @@ import 'package:geopin/core/theme/providers/theme_provider.dart';
 import 'core/router/app_router.dart';
 import 'core/theme/app_theme.dart';
 import 'core/utils/app_logger.dart';
+import 'features/mini_app/domain/registry/mini_app_registry.dart';
+import 'features/mini_app/presentation/provider/mini_app_provider.dart';
 
 /// 应用入口
 void main() async {

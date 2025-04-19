@@ -1,8 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../../../../../core/event/event_bus.dart';
-import '../../../../../core/event/event_constants.dart';
-import '../../domain/models/mini_app_model.dart';
 import '../provider/mini_app_provider.dart';
 import 'draggable_mini_app_grid.dart';
 

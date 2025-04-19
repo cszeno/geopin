@@ -2,14 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../../../../core/event/event_bus.dart';
-import '../../../../core/event/event_constants.dart';
 import '../../../../features/location/presentation/pages/location_page.dart';
-import '../../../../shared/features/mini_app/presentation/provider/mini_app_provider.dart';
-import '../../../../shared/features/mini_app/presentation/widgets/mini_app_grid_widget.dart';
 import '../../../mark_line/presentation/pages/line_marker_collect_page.dart';
 import '../../../mark_line/presentation/pages/line_marker_data_page.dart';
 import '../../../mark_point/presentation/pages/point_marker_collect_page.dart';
 import '../../../mark_point/presentation/pages/point_marker_data_page.dart';
+import '../../../mini_app/domain/registry/mini_app_registry.dart';
+import '../../../mini_app/presentation/provider/mini_app_provider.dart';
+import '../../../mini_app/presentation/widgets/mini_app_grid_widget.dart';
 import '../widgets/nav_bar.dart';
 
 /// 当前活跃的小程序类型
