@@ -207,7 +207,7 @@ class LocationServiceProvider with ChangeNotifier, WidgetsBindingObserver {
     // 订阅位置更新
     _locationSubscription = _repository.getLocationUpdates().listen(
       (location) {
-        AppLogger.debug('收到位置更新: 经度=${location.longitude}, 纬度=${location.latitude}, 精度=${location.accuracy}米', 
+        AppLogger.info('收到位置更新: 经度=${location.longitude}, 纬度=${location.latitude}, 高程=${location.altitude} 精度=${location.accuracy}米',
             loggerName: 'LocationService');
         _updateLocation(location);
       },
