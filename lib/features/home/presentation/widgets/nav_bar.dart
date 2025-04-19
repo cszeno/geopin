@@ -60,26 +60,40 @@ class NavBar extends StatelessWidget {
   Widget _buildSideButton(CustomButtonData button, int index) {
     final isSelected = index == selectedIndex;
     
-    return GestureDetector(
-      onTap: () => onTap(index),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(
-            button.icon,
-            size: 24,
-            color: Colors.grey[600],
+    // 使用Material+InkWell组合提供更好的触摸反馈
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: () => onTap(index),
+        customBorder: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.horizontal(
+            left: Radius.circular(30),
+            right: Radius.circular(30),
           ),
-          const SizedBox(height: 2),
-          Text(
-            button.label,
-            style: TextStyle(
-              color: Colors.grey[600],
-              fontSize: 12,
-              fontWeight: FontWeight.w500,
-            ),
+        ),
+        child: SizedBox(
+          width: double.infinity,
+          height: 60,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(
+                button.icon,
+                size: 24,
+                color: Colors.grey[600],
+              ),
+              const SizedBox(height: 2),
+              Text(
+                button.label,
+                style: TextStyle(
+                  color: Colors.grey[600],
+                  fontSize: 12,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+            ],
           ),
-        ],
+        ),
       ),
     );
   }
