@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:geopin/shared/features/mini_app/presentation/provider/mini_app_provider.dart';
+import 'core/constants/mini_app_register.dart';
 import 'core/i18n/generated/app_localizations.dart';
 import 'package:geopin/core/location/data/datasources/platform_location_data_source.dart';
 import 'package:geopin/core/location/data/repositories/location_repository_impl.dart';
@@ -29,6 +30,9 @@ void main() async {
       maxLogFiles: 7,
     ),
   );
+
+  // 初始化应用模块
+  MiniAppRegister.register();
 
   runApp(
       MultiProvider(

@@ -17,7 +17,7 @@ class MiniAppService {
   /// 从本地存储加载所有小程序
   Future<List<MiniAppModel>> loadMiniApps() async {
     // 获取预设小程序列表
-    final presetApps = MiniAppRegistry.getPresetApps();
+    final presetApps = MiniAppRegistry.getAllApps();
     
     try {
       final prefs = await SharedPreferences.getInstance();
