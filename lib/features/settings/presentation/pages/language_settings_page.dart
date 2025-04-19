@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:geopin/i18n/app_localizations_extension.dart';
 import 'package:provider/provider.dart';
-import 'package:geopin/core/i18n/app_localizations_extension.dart';
-import 'package:geopin/core/i18n/providers/locale_provider.dart';
+
+import '../../../../i18n/providers/locale_provider.dart';
 
 /// 语言设置页面
 class LanguageSettingsPage extends StatelessWidget {

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:geopin/i18n/app_localizations_extension.dart';
 import 'package:go_router/go_router.dart';
-import 'package:geopin/core/i18n/app_localizations_extension.dart';
 
 /// 设置页面
 class SettingsPage extends StatelessWidget {

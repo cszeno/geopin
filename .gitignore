@@ -45,7 +45,7 @@ app.*.map.json
 /android/app/release
 
 # Generated localization files
-lib/core/i18n/generated/
+lib/i18n/generated/
 
 # Temporary files
 *.tmp

@@ -2,7 +2,7 @@
 synthetic-package: false
 
 # ARB文件的目录
-arb-dir: lib/core/i18n/l10n
+arb-dir: lib/i18n/l10n
 
 # 模板ARB文件（中文作为模板）
 template-arb-file: app_zh.arb
@@ -14,4 +14,4 @@ output-localization-file: app_localizations.dart
 output-class: AppLocalizations
 
 # 输出目录（生成的文件将放在这里）
-output-dir: lib/core/i18n/generated 
+output-dir: lib/i18n/generated

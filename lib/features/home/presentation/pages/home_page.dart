@@ -2,27 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../../../../core/event/event_bus.dart';
-import '../../../../features/location/presentation/pages/location_page.dart';
-import '../../../mark_line/presentation/pages/line_marker_collect_page.dart';
-import '../../../mark_line/presentation/pages/line_marker_data_page.dart';
-import '../../../mark_point/presentation/pages/point_marker_collect_page.dart';
-import '../../../mark_point/presentation/pages/point_marker_data_page.dart';
-import '../../../mini_app/domain/registry/mini_app_registry.dart';
-import '../../../mini_app/presentation/provider/mini_app_provider.dart';
-import '../../../mini_app/presentation/widgets/mini_app_grid_widget.dart';
+import '../../../../shared/mini_app/domain/models/base_mini_app.dart';
+import '../../../../shared/mini_app/domain/registry/mini_app_hub.dart';
+import '../../../../shared/mini_app/domain/registry/mini_app_registry.dart';
+import '../../../../shared/mini_app/presentation/provider/mini_app_provider.dart';
+import '../../../../shared/mini_app/presentation/widgets/mini_app_grid_widget.dart';
 import '../widgets/nav_bar.dart';
-
-/// 当前活跃的小程序类型
-enum ActiveMiniAppType {
-  /// 无活跃小程序
-  none,
-  
-  /// 标记点小程序
-  pointMarker,
-  
-  /// 标记线小程序
-  lineMarker,
-}
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -34,50 +19,49 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   int _selectedIndex = 1; // 默认选中采集标签
   final PageController _pageController = PageController(initialPage: 0);
-  
-  // 当前活跃的小程序类型
-  ActiveMiniAppType _activeMiniAppType = ActiveMiniAppType.pointMarker;
-  
+
+  // 当前活跃的小程序ID
+  String _activeMiniAppId = 'mark_point'; // 默认使用mark_point
+
   @override
   void initState() {
     super.initState();
-    // 订阅标记点点击事件
-    bus.on(MiniAppEvent.tapPointMarker, _handlePointMarkerTap);
-    // 订阅标记线点击事件
-    bus.on(MiniAppEvent.tapLineMarker, _handleLineMarkerTap);
+    // 订阅通用MiniApp事件，用于处理所有MiniApp的页面切换
+    bus.on(MiniAppEvent.tapAnyMiniApp, _handleMiniAppEvent);
   }
 
   @override
   void dispose() {
     // 取消事件订阅
-    bus.off(MiniAppEvent.tapPointMarker, _handlePointMarkerTap);
-    bus.off(MiniAppEvent.tapLineMarker, _handleLineMarkerTap);
+    bus.off(MiniAppEvent.tapAnyMiniApp, _handleMiniAppEvent);
     _pageController.dispose();
     super.dispose();
   }
-  
-  /// 处理标记点点击事件
-  void _handlePointMarkerTap(dynamic arg) {
-    // 关闭底部弹窗 (如果存在)
-    Navigator.of(context).pop();
-    
-    setState(() {
-      _activeMiniAppType = ActiveMiniAppType.pointMarker;
-      _pageController.jumpToPage(1); // 切换到标记点采集页面
-      _selectedIndex = 1; // 选中采集标签
-    });
-  }
-  
-  /// 处理标记线点击事件
-  void _handleLineMarkerTap(dynamic arg) {
-    // 关闭底部弹窗 (如果存在)
-    Navigator.of(context).pop();
-    
-    setState(() {
-      _activeMiniAppType = ActiveMiniAppType.lineMarker;
-      _pageController.jumpToPage(1); // 切换到标记线采集页面
-      _selectedIndex = 1; // 选中采集标签
-    });
+
+  /// 通用的MiniApp事件处理函数
+  void _handleMiniAppEvent(dynamic arg) {
+    // 只处理BaseMiniApp类型的事件参数
+    if (arg is! BaseMiniApp) return;
+
+    final miniApp = arg;
+
+    // 如果有弹窗，先关闭
+    if (Navigator.canPop(context)) {
+      Navigator.pop(context);
+    }
+
+    // 判断MiniApp是否支持采集页面
+    final hasCollectPage =
+        MiniAppHub.instance.getCollectPage(miniApp.id, context) != null;
+
+    if (hasCollectPage) {
+      setState(() {
+        // 如果支持采集页面，切换到采集标签
+        _activeMiniAppId = miniApp.id;
+        _pageController.jumpToPage(1); // 切换到采集页面
+        _selectedIndex = 1; // 选中采集标签
+      });
+    }
   }
 
   @override
@@ -91,14 +75,14 @@ class _HomePageState extends State<HomePage> {
             physics: const NeverScrollableScrollPhysics(), // 禁用滑动切换
             onPageChanged: (index) {
               setState(() {
-                // 页面变化时更新状态
+                _selectedIndex = index;
               });
             },
             children: [
-              // 主页内容 (对应数据页)
+              // 数据
               _buildDataPage(),
-              
-              // 采集页面
+
+              // 采集
               _buildCollectPage(),
             ],
           ),
@@ -117,17 +101,17 @@ class _HomePageState extends State<HomePage> {
                 CustomButtonData(
                   icon: Icons.data_usage,
                   label: '数据',
-                  color: Theme.of(context).colorScheme.primary
+                  color: Theme.of(context).colorScheme.primary,
                 ),
                 CustomButtonData(
                   icon: Icons.location_on,
                   label: '采集',
-                  color: Theme.of(context).colorScheme.primary
+                  color: Theme.of(context).colorScheme.primary,
                 ),
                 CustomButtonData(
                   icon: Icons.grid_view,
                   label: '更多',
-                  color: Theme.of(context).colorScheme.primary
+                  color: Theme.of(context).colorScheme.primary,
                 ),
               ],
             ),
@@ -136,57 +120,44 @@ class _HomePageState extends State<HomePage> {
       ),
     );
   }
-  
+
   /// 构建数据页面
   Widget _buildDataPage() {
-    // 根据当前活跃的小程序类型显示对应的数据页面
-    switch (_activeMiniAppType) {
-      case ActiveMiniAppType.pointMarker:
-        return const PointMarkerDataPage();
-      case ActiveMiniAppType.lineMarker:
-        return const LineMarkerDataPage();
-      case ActiveMiniAppType.none:
-      default:
-        // 默认数据页面
-        return Center(
-          child: Text(
-            '数据页面',
-            style: const TextStyle(
-              fontSize: 24,
-              fontWeight: FontWeight.bold,
-              color: Colors.black87,
-            ),
-          ),
-        );
+    // 使用MiniAppHub获取当前活跃小程序的数据页面
+    final dataPage = MiniAppHub.instance.getDataPage(_activeMiniAppId, context);
+
+    // 如果找不到对应页面，显示默认页面
+    if (dataPage == null) {
+      return const Center(
+        child: Text(
+          '未找到对应的数据页面',
+          style: TextStyle(fontSize: 16, color: Colors.grey),
+        ),
+      );
     }
-  }
-  
-  /// 构建采集页面
-  Widget _buildCollectPage() {
-    // 根据当前活跃的小程序类型显示对应的采集页面
-    switch (_activeMiniAppType) {
-      case ActiveMiniAppType.pointMarker:
-        return const PointMarkerCollectPage();
-      case ActiveMiniAppType.lineMarker:
-        return const LineMarkerCollectPage();
-      case ActiveMiniAppType.none:
-      default:
-        // 默认采集页面，如LocationPage
-        return const LocationPage();
-    }
+
+    return dataPage;
   }
 
-  String _getTabName(int index) {
-    switch (index) {
-      case 0:
-        return '数据 (Data)';
-      case 1:
-        return '采集 (Collect)';
-      case 2:
-        return '更多 (More)';
-      default:
-        return '';
+  /// 构建采集页面
+  Widget _buildCollectPage() {
+    // 使用MiniAppHub获取当前活跃小程序的采集页面
+    final collectPage = MiniAppHub.instance.getCollectPage(
+      _activeMiniAppId,
+      context,
+    );
+
+    // 如果找不到对应页面，显示默认页面
+    if (collectPage == null) {
+      return const Center(
+        child: Text(
+          '该小程序不支持采集功能',
+          style: TextStyle(fontSize: 16, color: Colors.grey),
+        ),
+      );
     }
+
+    return collectPage;
   }
 
   void _handleNavSelected(int index) {
@@ -198,10 +169,24 @@ class _HomePageState extends State<HomePage> {
         });
         break;
       case 1: // 采集标签
-        setState(() {
-          _selectedIndex = index;
-          _pageController.jumpToPage(1); // 切换到采集页面
-        });
+        // 只有当前MiniApp支持采集页面时才切换到采集标签
+        final hasCollectPage =
+            MiniAppHub.instance.getCollectPage(_activeMiniAppId, context) !=
+            null;
+        if (hasCollectPage) {
+          setState(() {
+            _selectedIndex = index;
+            _pageController.jumpToPage(1); // 切换到采集页面
+          });
+        } else {
+          // 如果不支持采集页面，显示提示
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('当前功能不支持采集页面'),
+              duration: Duration(seconds: 2),
+            ),
+          );
+        }
         break;
       case 2: // 更多标签
         showModalBottomSheet(
@@ -240,29 +225,8 @@ class _HomePageState extends State<HomePage> {
               builder: (ctx, miniAppProvider, _) {
                 return Column(
                   children: [
-                    // 排序按钮
-                    if (miniAppProvider.isDraggingMode)
-                      Container(
-                        padding: const EdgeInsets.symmetric(vertical: 8),
-                        color: Colors.white,
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.end,
-                          children: [
-                            TextButton.icon(
-                              icon: const Icon(Icons.done),
-                              label: const Text('完成排序'),
-                              onPressed: () {
-                                miniAppProvider.setDraggingMode(false);
-                              },
-                            ),
-                          ],
-                        ),
-                      ),
-
                     // 应用网格
-                    Expanded(
-                      child: MiniAppGridWidget(),
-                    ),
+                    Expanded(child: MiniAppGridWidget()),
                   ],
                 );
               },

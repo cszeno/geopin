@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:geopin/core/i18n/app_localizations_extension.dart';
+import 'package:geopin/i18n/app_localizations_extension.dart';
 
 import '../../../../core/location/domain/entities/location.dart';
 

@@ -1,20 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-import 'core/i18n/generated/app_localizations.dart';
+import 'package:geopin/core/init/mini_app_initializer.dart';
+import 'package:geopin/shared/mini_app/presentation/provider/mini_app_provider.dart';
 import 'package:geopin/core/location/data/datasources/platform_location_data_source.dart';
 import 'package:geopin/core/location/data/repositories/location_repository_impl.dart';
 import 'package:geopin/core/location/domain/repositories/location_repository.dart';
+import 'package:geopin/shared/theme/app_theme.dart';
+import 'package:geopin/shared/theme/providers/theme_provider.dart';
 import 'package:logging/logging.dart';
 import 'package:provider/provider.dart';
 import 'package:geopin/core/location/providers/location_service_provider.dart';
-import 'package:geopin/core/i18n/providers/locale_provider.dart';
-import 'package:geopin/core/theme/providers/theme_provider.dart';
 
 import 'core/router/app_router.dart';
-import 'core/theme/app_theme.dart';
 import 'core/utils/app_logger.dart';
-import 'features/mini_app/domain/registry/mini_app_registry.dart';
-import 'features/mini_app/presentation/provider/mini_app_provider.dart';
+import 'i18n/generated/app_localizations.dart';
+import 'i18n/providers/locale_provider.dart';
 
 /// 应用入口
 void main() async {
@@ -31,8 +31,8 @@ void main() async {
     ),
   );
 
-  // 初始化应用模块
-  MiniAppRegister.register();
+  // 初始化所有MiniApp
+  MiniAppInitializer.initialize();
 
   runApp(
       MultiProvider(

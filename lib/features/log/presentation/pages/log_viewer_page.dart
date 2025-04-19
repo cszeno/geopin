@@ -1,8 +1,8 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:geopin/i18n/app_localizations_extension.dart';
 import 'package:share_plus/share_plus.dart';
-import 'package:geopin/core/i18n/app_localizations_extension.dart';
 
 import '../../../../core/utils/app_logger.dart';
 

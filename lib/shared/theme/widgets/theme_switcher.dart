@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:geopin/core/theme/providers/theme_provider.dart';
 import 'package:geopin/core/constants/app_colors.dart';
+
+import '../providers/theme_provider.dart';
 
 /// 主题切换组件
 /// 可以放在设置页面或其他需要切换主题的地方

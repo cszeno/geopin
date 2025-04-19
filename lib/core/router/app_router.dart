@@ -1,30 +1,20 @@
 import 'package:flutter/material.dart';
-import 'package:geopin/core/i18n/app_localizations_extension.dart';
-import 'package:geopin/features/home/presentation/pages/home_page.dart';
-import 'package:geopin/features/log/presentation/pages/log_viewer_page.dart';
-import 'package:geopin/features/settings/presentation/pages/settings_page.dart';
+import 'package:geopin/i18n/app_localizations_extension.dart';
+
 import 'package:go_router/go_router.dart';
 
-import '../../features/location/presentation/pages/location_page.dart';
+import 'package:geopin/features/home/presentation/pages/home_page.dart';
 import '../../features/splash/presentation/pages/splash_page.dart';
-import '../../features/mini_app/domain/registry/mini_app_registry.dart';
+import '../../shared/mini_app/domain/registry/mini_app_hub.dart';
 
 /// 应用路由配置
 class AppRouter {
+  /// 启动页路由
   static RouterEntity splashRouter = RouterEntity(name: "splash", path: "/splash");
+  
+  /// 主页路由
   static RouterEntity homeRouter = RouterEntity(name: "home", path: "/home");
 
-  // app开头的是通过app方式进入的
-  static RouterEntity appLogRouter = RouterEntity(
-      name: MiniAppRegister.log.name, path: MiniAppRegister.log.route);
-
-  static RouterEntity appSettingsRouter = RouterEntity(
-      name: MiniAppRegister.settings.name,
-      path: MiniAppRegister.settings.route);
-
-  static RouterEntity appLocationTestRouter = RouterEntity(
-      name: MiniAppRegister.locationTest.name,
-      path: MiniAppRegister.locationTest.route);
 
   /// 创建路由配置
   static GoRouter createRouter() {
@@ -49,24 +39,8 @@ class AppRouter {
           },
         ),
 
-        // 日志界面
-        GoRoute(
-          path: appLogRouter.path,
-          builder: (context, state) => const LogViewerPage(),
-        ),
-
-        // 设置页面
-        GoRoute(
-          path: appLogRouter.path,
-          builder: (context, state) => const SettingsPage(),
-        ),
-        
-        // 位置显示页面
-        GoRoute(
-          path: appLocationTestRouter.path,
-          builder: (context, state) => const LocationPage(),
-        ),
-
+        // 自动生成所有MiniApp路由
+        ...MiniAppHub.instance.generateRoutes(),
       ],
 
       errorBuilder: (context, state) => Scaffold(
