@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import '../models/base_mini_app.dart';
+import '../models/abstract_mini_app.dart';
 import '../models/mini_app_model.dart';
 
 /// MiniApp注册中心
@@ -17,28 +17,20 @@ class MiniAppHub {
   static MiniAppHub get instance => _instance;
   
   /// 存储所有注册的MiniApp，按ID索引
-  final Map<String, BaseMiniApp> _apps = {};
+  final Map<String, AbstractMiniApp> _apps = {};
   
   /// 注册一个MiniApp
   /// 
   /// 将MiniApp添加到注册中心
-  void register(BaseMiniApp app) {
+  void register(AbstractMiniApp app) {
     _apps[app.id] = app;
   }
   
-  /// 批量注册多个MiniApp
-  /// 
-  /// 一次性注册多个MiniApp
-  void registerAll(List<BaseMiniApp> apps) {
-    for (final app in apps) {
-      register(app);
-    }
-  }
-  
+
   /// 获取所有注册的MiniApp
   /// 
   /// 返回所有已注册MiniApp的不可变列表
-  List<BaseMiniApp> getAllApps() {
+  List<AbstractMiniApp> getAllApps() {
     return List.unmodifiable(_apps.values);
   }
   
@@ -52,7 +44,7 @@ class MiniAppHub {
   /// 根据ID获取MiniApp
   /// 
   /// 返回指定ID的MiniApp，如果不存在则返回null
-  BaseMiniApp? getAppById(String id) {
+  AbstractMiniApp? getAppById(String id) {
     return _apps[id];
   }
   
@@ -71,41 +63,39 @@ class MiniAppHub {
   /// 为路由系统生成所有MiniApp的路由配置
   List<RouteBase> generateRoutes() {
     final List<RouteBase> routes = [];
-    
+
     for (final app in _apps.values) {
       routes.add(
+        app.config.enableTransitionPage ? GoRoute(
+          path: app.route,
+          name: app.id,
+          builder: (context, state) => app.buildPage(context),
+        ) :
         GoRoute(
           path: app.route,
           name: app.id,
-          builder: (context, state) => app.buildDataPage(context),
+          pageBuilder: (context, state) =>
+              CustomTransitionPage(child: app.buildPage(context),
+                  transitionsBuilder: (context, animation, secondaryAnimation,
+                      child) {
+                    return child;
+                  }),
         ),
       );
     }
     
     return routes;
   }
-  
-  /// 获取MiniApp的数据页面
-  /// 
-  /// 根据MiniApp ID获取其数据页面
-  Widget? getDataPage(String appId, BuildContext context) {
-    final app = getAppById(appId);
-    if (app == null) {
-      return null;
-    }
-    
-    return app.buildDataPage(context);
-  }
-  
+
   /// 获取MiniApp的采集页面
-  /// 
+  ///
   /// 根据MiniApp ID获取其采集页面
-  Widget? getCollectPage(String appId, BuildContext context) {
+  Widget? getPage(String appId, BuildContext context) {
     final app = getAppById(appId);
     if (app == null) {
       return null;
     }
-    
-    return app.buildCollectPage(context);
+
+    return app.buildPage(context);
   }
-} 
+}

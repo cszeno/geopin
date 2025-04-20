@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:geopin/core/init/mini_app_initializer.dart';
-import 'package:geopin/shared/mini_app/presentation/provider/mini_app_provider.dart';
 import 'package:geopin/core/location/data/datasources/platform_location_data_source.dart';
 import 'package:geopin/core/location/data/repositories/location_repository_impl.dart';
 import 'package:geopin/core/location/domain/repositories/location_repository.dart';
@@ -38,8 +37,6 @@ void main() async {
       MultiProvider(
         providers: [
           Provider<PlatformLocationDataSource>(create: (_) => PlatformLocationDataSource()),
-
-          ChangeNotifierProvider(create: (context) => MiniAppProvider()),
 
           /// ProxyProvider<A, B>：依赖一个 Provider A，生成 Provider B
           ProxyProvider<PlatformLocationDataSource, LocationRepository>(

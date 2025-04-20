@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 
 /// 标记点采集页面
-class PointMarkerCollectPage extends StatelessWidget {
+class MarkPointDataPage extends StatelessWidget {
   /// 构造函数
-  const PointMarkerCollectPage({super.key});
+  const MarkPointDataPage({super.key});
 
   @override
   Widget build(BuildContext context) {

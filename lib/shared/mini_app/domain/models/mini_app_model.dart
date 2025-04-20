@@ -36,14 +36,8 @@ class MiniAppModel {
   final int priority;
   
   /// 小程序是否可用
-  final bool isEnabled;
-  
-  /// 小程序类型
-  final MiniAppType type;
-  
-  /// 事件名称（仅type为eventBus时有效）
-  final Object? eventName;
-  
+  final bool enableTransitionPage;
+
   /// 小程序构造函数
   const MiniAppModel({
     required this.id,
@@ -53,9 +47,7 @@ class MiniAppModel {
     required this.backgroundColor,
     required this.route,
     this.priority = 100,
-    this.isEnabled = true,
-    this.type = MiniAppType.router,
-    this.eventName,
+    this.enableTransitionPage = true,
   });
   
   /// 创建小程序模型的副本并更新属性
@@ -80,9 +72,7 @@ class MiniAppModel {
       backgroundColor: backgroundColor ?? this.backgroundColor,
       route: route ?? this.route,
       priority: priority ?? this.priority,
-      isEnabled: isEnabled ?? this.isEnabled,
-      type: type ?? this.type,
-      eventName: eventName ?? this.eventName,
+      enableTransitionPage: isEnabled ?? this.enableTransitionPage,
     );
   }
   
@@ -96,9 +86,8 @@ class MiniAppModel {
       backgroundColor: Color(json['backgroundColor'] as int),
       route: json['route'] as String,
       priority: json['priority'] as int? ?? 100,
-      isEnabled: json['isEnabled'] as bool? ?? true,
-      // 默认使用router类型
-      type: MiniAppType.router,
+      enableTransitionPage: json['isEnabled'] as bool? ?? true,
+
     );
   }
   
@@ -112,7 +101,7 @@ class MiniAppModel {
       'backgroundColor': backgroundColor.value,
       'route': route,
       'priority': priority,
-      'isEnabled': isEnabled,
+      'isEnabled': enableTransitionPage,
     };
   }
 
@@ -134,8 +123,6 @@ class MiniAppModel {
     color: color,
     backgroundColor: color, // 自动使用前景色作为背景色
     route: route,
-    isEnabled: isEnabled,
-    type: type,
-    eventName: eventName,
+    enableTransitionPage: isEnabled,
   );
 } 

@@ -6,6 +6,13 @@ class AppTheme {
   /// 获取亮色主题
   static ThemeData getLightTheme() {
     return ThemeData(
+      // pageTransitionsTheme: PageTransitionsTheme(
+      //   builders: {
+      //     // 针对所有平台禁用页面过渡动画
+      //     TargetPlatform.android: const NoTransitionsBuilder(),
+      //     TargetPlatform.iOS: const NoTransitionsBuilder(),
+      //   },
+      // ),
       colorScheme: ColorScheme(
         brightness: Brightness.light,
         primary: AppColors.primary,
@@ -134,4 +141,21 @@ class AppTheme {
       ),
     );
   }
-} 
+}
+
+// 自定义无动画的过渡生成器
+class NoTransitionsBuilder extends PageTransitionsBuilder {
+  const NoTransitionsBuilder();
+
+  @override
+  Widget buildTransitions<T>(
+      PageRoute<T> route,
+      BuildContext context,
+      Animation<double> animation,
+      Animation<double> secondaryAnimation,
+      Widget child,
+      ) {
+    // 直接返回子组件，不添加动画
+    return child;
+  }
+}

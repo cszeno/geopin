@@ -1,14 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:geopin/features/mark_line/presentation/pages/mark_line_collect_page.dart';
+import 'package:geopin/shared/mini_app/domain/models/abstract_mini_app.dart';
 import 'package:go_router/go_router.dart';
-import '../../core/event/event_bus.dart';
-import '../../shared/mini_app/domain/models/base_mini_app.dart';
+import '../../core/utils/app_logger.dart';
 import '../../shared/mini_app/domain/models/mini_app_model.dart';
-import '../../shared/mini_app/domain/registry/mini_app_registry.dart';
-import 'presentation/pages/line_marker_collect_page.dart';
-import 'presentation/pages/line_marker_data_page.dart';
 
 /// 标记线MiniApp实现
-class MarkLineMiniApp extends BaseMiniApp {
+class MarkLineMiniApp extends AbstractMiniApp {
   /// 单例实例
   static final MarkLineMiniApp _instance = MarkLineMiniApp._();
   
@@ -28,37 +26,18 @@ class MarkLineMiniApp extends BaseMiniApp {
     backgroundColor: Color(0xFF007AFF),
     route: '/mark_line',
     priority: 15,
-    type: MiniAppType.eventBus,
-    eventName: MiniAppEvent.tapLineMarker,
+    enableTransitionPage: false
   );
-  
-  /// 构建数据页面
-  @override
-  Widget buildDataPage(BuildContext context) {
-    return const LineMarkerDataPage();
-  }
-  
-  /// 构建采集页面
-  @override
-  Widget buildCollectPage(BuildContext context) {
-    return const LineMarkerCollectPage();
-  }
   
   /// 处理点击事件
   @override
   void handleTap(BuildContext context) {
-    // 先发出通用事件，传递当前MiniApp实例
-    bus.emit(MiniAppEvent.tapAnyMiniApp, this);
-    
-    // 可以直接导航到页面
-    if (config.type == MiniAppType.router) {
-      context.push(config.route);
-    } 
-    // 或者发送事件
-    else if (config.type == MiniAppType.eventBus && config.eventName != null) {
-      bus.emit(config.eventName!, this);
-      
-      // 对于标记线，关闭底部弹窗是通过通用事件处理来完成的
-    }
+    context.go(config.route);
+    AppLogger.debug("点击了miniapp，路由为：${config.route}");
+  }
+
+  @override
+  Widget buildPage(BuildContext context) {
+    return MarkLineCollectPage();
   }
 } 

@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:geopin/features/mark_point/presentation/pages/mark_point_collect_page.dart';
+import 'package:geopin/features/mark_point/presentation/pages/point_marker_data_page.dart';
 import 'package:geopin/i18n/app_localizations_extension.dart';
 
 import 'package:go_router/go_router.dart';
 
-import 'package:geopin/features/home/presentation/pages/home_page.dart';
+import '../../features/settings/presentation/pages/language_settings_page.dart';
 import '../../features/splash/presentation/pages/splash_page.dart';
 import '../../shared/mini_app/domain/registry/mini_app_hub.dart';
 
@@ -30,18 +32,16 @@ class AppRouter {
           },
         ),
 
-        // 主页
-        GoRoute(
-          path: homeRouter.path,
-          name: homeRouter.name,
-          builder: (BuildContext context, GoRouterState state) {
-            return HomePage();
-          },
-        ),
-
         // 自动生成所有MiniApp路由
         ...MiniAppHub.instance.generateRoutes(),
+
+        // 语言设置页面
+        GoRoute(
+          path: '/language-settings',
+          builder: (context, state) => const LanguageSettingsPage(),
+        ),
       ],
+
 
       errorBuilder: (context, state) => Scaffold(
         appBar: AppBar(
