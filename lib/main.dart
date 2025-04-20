@@ -4,6 +4,7 @@ import 'package:geopin/core/init/mini_app_initializer.dart';
 import 'package:geopin/core/location/data/datasources/platform_location_data_source.dart';
 import 'package:geopin/core/location/data/repositories/location_repository_impl.dart';
 import 'package:geopin/core/location/domain/repositories/location_repository.dart';
+import 'package:geopin/features/mark_point/presentation/providers/mark_point_provider.dart';
 import 'package:geopin/shared/theme/app_theme.dart';
 import 'package:geopin/shared/theme/providers/theme_provider.dart';
 import 'package:logging/logging.dart';
@@ -12,6 +13,7 @@ import 'package:geopin/core/location/providers/location_service_provider.dart';
 
 import 'core/router/app_router.dart';
 import 'core/utils/app_logger.dart';
+import 'core/utils/sp_util.dart';
 import 'i18n/generated/app_localizations.dart';
 import 'i18n/providers/locale_provider.dart';
 
@@ -30,6 +32,10 @@ void main() async {
     ),
   );
 
+  // 初始化存储服务
+  final spUtil = SPUtil();
+  await spUtil.init();
+
   // 初始化所有MiniApp
   MiniAppInitializer.initialize();
 
@@ -43,6 +49,7 @@ void main() async {
             update: (_, dataSource, __) => LocationRepositoryImpl(dataSource),
           ),
 
+          // 添加位置服务
           ChangeNotifierProvider(create: (context) => LocationServiceProvider(
             context.read<LocationRepository>()
           )),
@@ -52,6 +59,9 @@ void main() async {
           
           // 添加主题设置提供者
           ChangeNotifierProvider(create: (_) => ThemeProvider()),
+          
+          // 标记点
+          ChangeNotifierProvider(create: (_) => MarkPointProvider())
         ],
         child: MyApp(),
       )
