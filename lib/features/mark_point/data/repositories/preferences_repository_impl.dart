@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:geopin/core/utils/app_logger.dart';
 import 'package:geopin/features/mark_point/domain/repositories/preferences_repository.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:get_it/get_it.dart';
 
 /// 偏好设置仓库实现类
 class PreferencesRepositoryImpl implements PreferencesRepository {
@@ -16,10 +17,23 @@ class PreferencesRepositoryImpl implements PreferencesRepository {
   /// 最大历史记录数量
   static const int _maxHistoryItems = 10;
 
+  /// 获取SharedPreferences实例
+  Future<SharedPreferences> get _prefs async {
+    // 尝试从GetIt获取实例，如果未注册，则动态创建
+    if (GetIt.I.isRegistered<SharedPreferences>()) {
+      return GetIt.I<SharedPreferences>();
+    } else {
+      final prefs = await SharedPreferences.getInstance();
+      // 注册到GetIt中以便下次使用
+      GetIt.I.registerSingleton<SharedPreferences>(prefs);
+      return prefs;
+    }
+  }
+
   @override
   Future<bool> saveSelectedColor(Color color) async {
     try {
-      final prefs = await SharedPreferences.getInstance();
+      final prefs = await _prefs;
       return await prefs.setInt(_colorKey, color.value);
     } catch (e) {
       AppLogger.error('保存颜色失败: $e');
@@ -30,7 +44,7 @@ class PreferencesRepositoryImpl implements PreferencesRepository {
   @override
   Future<Color?> getSavedColor() async {
     try {
-      final prefs = await SharedPreferences.getInstance();
+      final prefs = await _prefs;
       final colorValue = prefs.getInt(_colorKey);
       return colorValue != null ? Color(colorValue) : null;
     } catch (e) {
@@ -42,7 +56,7 @@ class PreferencesRepositoryImpl implements PreferencesRepository {
   @override
   Future<bool> saveAttributeHistory(List<Map<String, String>> attributes) async {
     try {
-      final prefs = await SharedPreferences.getInstance();
+      final prefs = await _prefs;
       final jsonString = jsonEncode(attributes);
       AppLogger.debug('保存属性历史: $jsonString');
       return await prefs.setString(_attributeHistoryKey, jsonString);
@@ -55,7 +69,7 @@ class PreferencesRepositoryImpl implements PreferencesRepository {
   @override
   Future<List<Map<String, String>>> getAttributeHistory() async {
     try {
-      final prefs = await SharedPreferences.getInstance();
+      final prefs = await _prefs;
       final jsonString = prefs.getString(_attributeHistoryKey);
       
       if (jsonString == null) {

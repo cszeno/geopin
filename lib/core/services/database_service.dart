@@ -1,6 +1,7 @@
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 import 'package:logging/logging.dart';
+import 'package:get_it/get_it.dart';
 
 /// 数据库服务
 /// 
@@ -32,7 +33,14 @@ class DatabaseService {
   
   /// 获取单例实例
   static DatabaseService get instance {
-    _instance ??= DatabaseService._();
+    if (_instance == null) {
+      _instance = DatabaseService._();
+      // 如果GetIt尚未注册此服务，则注册
+      final getIt = GetIt.instance;
+      if (!getIt.isRegistered<DatabaseService>()) {
+        getIt.registerSingleton<DatabaseService>(_instance!);
+      }
+    }
     return _instance!;
   }
   
@@ -76,12 +84,12 @@ class DatabaseService {
     await db.execute('''
       CREATE TABLE IF NOT EXISTS $markPointsTable (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
+        uuid TEXT NOT NULL,
         name TEXT NOT NULL,
         latitude REAL NOT NULL,
         longitude REAL NOT NULL,
         project_id INTEGER,
         elevation REAL,
-        icon_id TEXT,
         icon_color INTEGER,
         img_path TEXT,
         attributes TEXT,

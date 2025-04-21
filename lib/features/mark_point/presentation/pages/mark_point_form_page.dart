@@ -153,7 +153,7 @@ class _MarkPointFormView extends StatelessWidget {
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(10),
                           ),
-                          prefixIcon: const Icon(Icons.pin_drop),
+                          prefixIcon: const Icon(Icons.push_pin),
                           contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
                         ),
                         validator: (value) {

@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:get_it/get_it.dart';
 import 'package:geopin/core/init/mini_app_initializer.dart';
 import 'package:geopin/core/location/data/datasources/platform_location_data_source.dart';
 import 'package:geopin/core/location/data/repositories/location_repository_impl.dart';
 import 'package:geopin/core/location/domain/repositories/location_repository.dart';
+import 'package:geopin/core/services/database_service.dart';
+import 'package:geopin/features/mark_point/data/datasources/mark_point_local_data_source.dart';
+import 'package:geopin/features/mark_point/data/repositories/mark_point_repository_impl.dart';
 import 'package:geopin/features/mark_point/presentation/providers/mark_point_provider.dart';
 import 'package:geopin/shared/theme/app_theme.dart';
 import 'package:geopin/shared/theme/providers/theme_provider.dart';
@@ -23,9 +27,6 @@ void main() async {
   // 确保Flutter绑定初始化
   WidgetsFlutterBinding.ensureInitialized();
   
-  // 初始化依赖注入
-  ServiceLocator.init();
-
   // 初始化日志系统
   await AppLogger.init(
     config: LogConfig(
@@ -36,39 +37,40 @@ void main() async {
       maxLogFiles: 7,
     ),
   );
-
-  // 初始化存储服务
-  final spUtil = SPUtil();
-  await spUtil.init();
-
+  
+  // 初始化并注册存储服务到GetIt
+  await SPUtil.registerInGetIt();
+  
+  // 注册位置相关服务到GetIt
+  final locationDataSource = PlatformLocationDataSource();
+  GetIt.I.registerSingleton<PlatformLocationDataSource>(locationDataSource);
+  GetIt.I.registerSingleton<LocationRepository>(LocationRepositoryImpl(locationDataSource));
+  GetIt.I.registerSingleton<LocationServiceProvider>(
+    LocationServiceProvider(GetIt.I<LocationRepository>())
+  );
+  
+  // 注册UI状态Provider到GetIt
+  GetIt.I.registerSingleton<LocaleProvider>(LocaleProvider());
+  GetIt.I.registerSingleton<ThemeProvider>(ThemeProvider());
+  
+  // 初始化依赖注入
+  await ServiceLocator.initDependencies();
+  
   // 初始化所有MiniApp
   MiniAppInitializer.initialize();
 
   runApp(
       MultiProvider(
         providers: [
-          Provider<PlatformLocationDataSource>(create: (_) => PlatformLocationDataSource()),
-
-          /// ProxyProvider<A, B>：依赖一个 Provider A，生成 Provider B
-          ProxyProvider<PlatformLocationDataSource, LocationRepository>(
-            update: (_, dataSource, __) => LocationRepositoryImpl(dataSource),
-          ),
-
-          // 添加位置服务
-          ChangeNotifierProvider(create: (context) => LocationServiceProvider(
-            context.read<LocationRepository>()
-          )),
-          
-          // 添加语言设置提供者
-          ChangeNotifierProvider(create: (_) => LocaleProvider()),
-          
-          // 添加主题设置提供者
-          ChangeNotifierProvider(create: (_) => ThemeProvider()),
-          
-          // 标记点
-          ChangeNotifierProvider(create: (_) => MarkPointProvider())
+          // 所有Provider现在从GetIt获取
+          Provider<PlatformLocationDataSource>.value(value: GetIt.I<PlatformLocationDataSource>()),
+          Provider<LocationRepository>.value(value: GetIt.I<LocationRepository>()),
+          ChangeNotifierProvider.value(value: GetIt.I<LocationServiceProvider>()),
+          ChangeNotifierProvider.value(value: GetIt.I<LocaleProvider>()),
+          ChangeNotifierProvider.value(value: GetIt.I<ThemeProvider>()),
+          ChangeNotifierProvider.value(value: GetIt.I<MarkPointProvider>()),
         ],
-        child: MyApp(),
+        child: const MyApp(),
       )
   );
 }

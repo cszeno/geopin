@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:geopin/core/location/providers/location_service_provider.dart';
+import 'package:geopin/core/utils/app_logger.dart';
 import 'package:geopin/features/mark_point/presentation/providers/mark_point_provider.dart';
 import 'package:go_router/go_router.dart';
 import 'package:latlong2/latlong.dart';
@@ -22,9 +23,8 @@ class MarkPointCollectPage extends StatefulWidget {
 
 class _MarkPointCollectPageState extends State<MarkPointCollectPage> {
   MapController mapController = MapController();
-
-  // 获取所有标记点
-  final List<Marker> allMarkers = [];
+  
+  // 当前地图中心
   LatLng _currentCenter = const LatLng(31.23, 121.47); // 默认初始位置
 
   @override
@@ -42,89 +42,167 @@ class _MarkPointCollectPageState extends State<MarkPointCollectPage> {
 
   @override
   Widget build(BuildContext context) {
-    final markPointCollectProvider = Provider.of<MarkPointProvider>(context);
-
-    for (int i = 0; i < markPointCollectProvider.points.length; i++) {
-      final markPointEntity = markPointCollectProvider.points[i];
-      allMarkers.add(_buildMarker(context, i, markPointEntity));
-    }
-
-
     return Scaffold(
-      body: Stack(
-        children: [
-          Consumer<LocationServiceProvider>(
-            builder: (context, locationServiceProvider, child) {
-              return FlutterMap(
-                options: MapOptions(
-                  initialCenter: _currentCenter,
-                  onMapEvent: (event) {
-                    if (event is MapEventMove) {
-                      setState(() {
-                        _currentCenter = event.camera.center;
-                      });
-                    }
-                  },
-                ),
-                mapController: mapController,
-                children: [
-                  TileLayer(
-                    urlTemplate:
-                        'http://wprd04.is.autonavi.com/appmaptile?lang=zh_cn&size=1&style=7&x={x}&y={y}&z={z}',
-                    userAgentPackageName: 'dev.fleaflet.flutter_map.example',
-                  ),
-
-                  MarkerLayer(markers: allMarkers),
-
-                  Center(
-                    child: CrossCursorMarker(
-                      coordinate: _currentCenter,
-                      color: Colors.red,
-                      size: 40.0,
-                      strokeWidth: 4,
-                      showCircle: true,
+      body: Consumer<MarkPointProvider>(
+        builder: (context, markPointProvider, child) {
+          // 从Provider中创建标记列表
+          final markers = markPointProvider.points.map((markPoint) => 
+            _buildMarker(context, markPoint)
+          ).toList();
+          
+          return Stack(
+            children: [
+              Consumer<LocationServiceProvider>(
+                builder: (context, locationServiceProvider, child) {
+                  return FlutterMap(
+                    options: MapOptions(
+                      initialCenter: _currentCenter,
+                      onMapEvent: (event) {
+                        if (event is MapEventMove) {
+                          setState(() {
+                            _currentCenter = event.camera.center;
+                          });
+                        }
+                      },
+                    ),
+                    mapController: mapController,
+                    children: [
+                      TileLayer(
+                        urlTemplate:
+                            'http://wprd04.is.autonavi.com/appmaptile?lang=zh_cn&size=1&style=7&x={x}&y={y}&z={z}',
+                        userAgentPackageName: 'dev.fleaflet.flutter_map.example',
+                      ),
+    
+                      MarkerLayer(markers: markers),
+    
+                      Center(
+                        child: CrossCursorMarker(
+                          coordinate: _currentCenter,
+                          color: Colors.red,
+                          size: 40.0,
+                          strokeWidth: 4,
+                          showCircle: true,
+                        ),
+                      ),
+                    ],
+                  );
+                },
+              ),
+    
+              // 显示加载状态
+              if (markPointProvider.isLoading)
+                const Positioned(
+                  top: 50,
+                  left: 0,
+                  right: 0,
+                  child: Center(
+                    child: Card(
+                      elevation: 4,
+                      color: Colors.white,
+                      child: Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            SizedBox(
+                              width: 20,
+                              height: 20,
+                              child: CircularProgressIndicator(strokeWidth: 2),
+                            ),
+                            SizedBox(width: 10),
+                            Text('正在加载标记点...'),
+                          ],
+                        ),
+                      ),
                     ),
                   ),
-                ],
-              );
-            },
-          ),
-
-          Positioned(
-            left: 20,
-            right: 20,
-            bottom: 20,
-            child: NavBar(
-              onTap: (index) {
-                _handleNavSelected(index, markPointCollectProvider);
-              },
-              buttons: [
-                CustomButtonData(
-                  icon: Icons.data_usage,
-                  label: '数据',
-                  color: Theme.of(context).colorScheme.primary,
                 ),
-                CustomButtonData(
-                  icon: Icons.location_on,
-                  label: '采集',
-                  color: Theme.of(context).colorScheme.primary,
+    
+              // 刷新按钮 - 仅在必要时手动刷新
+              Positioned(
+                top: 50,
+                right: 16,
+                child: FloatingActionButton(
+                  mini: true,
+                  heroTag: 'refreshBtn',
+                  backgroundColor: Colors.white,
+                  onPressed: markPointProvider.isLoading 
+                      ? null 
+                      : () => markPointProvider.loadAllMarkPoints(),
+                  child: Icon(
+                    Icons.refresh,
+                    color: markPointProvider.isLoading 
+                        ? Colors.grey 
+                        : Theme.of(context).primaryColor,
+                  ),
                 ),
-                CustomButtonData(
-                  icon: Icons.grid_view,
-                  label: '更多',
-                  color: Theme.of(context).colorScheme.primary,
+              ),
+    
+              Positioned(
+                left: 20,
+                right: 20,
+                bottom: 20,
+                child: NavBar(
+                  onTap: (index) {
+                    _handleNavSelected(index, markPointProvider);
+                  },
+                  buttons: [
+                    CustomButtonData(
+                      icon: Icons.data_usage,
+                      label: '数据',
+                      color: Theme.of(context).colorScheme.primary,
+                    ),
+                    CustomButtonData(
+                      icon: Icons.push_pin,
+                      label: '采集',
+                      color: Theme.of(context).colorScheme.primary,
+                    ),
+                    CustomButtonData(
+                      icon: Icons.grid_view,
+                      label: '更多',
+                      color: Theme.of(context).colorScheme.primary,
+                    ),
+                  ],
                 ),
-              ],
-            ),
-          ),
-        ],
+              ),
+              
+              // 错误提示
+              if (markPointProvider.errorMessage != null)
+                Positioned(
+                  bottom: 100,
+                  left: 20,
+                  right: 20,
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                    decoration: BoxDecoration(
+                      color: Colors.red[100],
+                      borderRadius: BorderRadius.circular(8),
+                      border: Border.all(color: Colors.red),
+                    ),
+                    child: Row(
+                      children: [
+                        const Icon(Icons.error_outline, color: Colors.red),
+                        const SizedBox(width: 8),
+                        Expanded(
+                          child: Text(
+                            markPointProvider.errorMessage!,
+                            style: const TextStyle(color: Colors.red),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+            ],
+          );
+        }
       ),
     );
   }
 
   void _handleNavSelected(
     int index,
-    MarkPointProvider markPointCollectProvider,
+    MarkPointProvider markPointProvider,
   ) {
     switch (index) {
       case 0: // 数据标签
@@ -142,8 +220,8 @@ class _MarkPointCollectPageState extends State<MarkPointCollectPage> {
             latitude: _currentCenter.latitude,
             longitude: _currentCenter.longitude,
             onSubmit: (markPoint) {
-              // 添加新的标记点
-              markPointCollectProvider.addPoint(markPoint);
+              // 添加新的标记点 - Provider会自动通知UI更新
+              markPointProvider.addPoint(markPoint);
             },
           ),
         );
@@ -163,7 +241,6 @@ class _MarkPointCollectPageState extends State<MarkPointCollectPage> {
   /// 构建单个标记
   Marker _buildMarker(
     BuildContext context,
-    int index,
     MarkPointEntity markPointEntity,
   ) {
     // 使用主题中定义的尺寸常量
@@ -185,7 +262,7 @@ class _MarkPointCollectPageState extends State<MarkPointCollectPage> {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(Icons.location_pin, color: markPointEntity.color, size: iconSize),
+            Icon(Icons.push_pin, color: markPointEntity.color, size: iconSize),
             // 添加底部空间，使定位图标针尖部分对准坐标点
           ],
         ),

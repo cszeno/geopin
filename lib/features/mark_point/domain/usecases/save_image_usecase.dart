@@ -1,4 +1,5 @@
 import 'package:image_picker/image_picker.dart';
+import 'package:get_it/get_it.dart';
 
 import '../repositories/image_repository.dart';
 
@@ -6,9 +7,7 @@ import '../repositories/image_repository.dart';
 /// 
 /// 负责从相机或相册选择图片并保存到应用目录
 class SaveImageUseCase {
-  final ImageRepository _imageRepository;
-  
-  SaveImageUseCase(this._imageRepository);
+  final ImageRepository _imageRepository = GetIt.I<ImageRepository>();
   
   /// 从相机或相册选择图片并保存
   /// 

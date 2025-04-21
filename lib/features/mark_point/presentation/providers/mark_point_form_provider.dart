@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:get_it/get_it.dart';
 import 'package:geopin/core/utils/app_logger.dart';
 import 'package:image_picker/image_picker.dart';
 
@@ -15,12 +16,12 @@ import '../../domain/usecases/save_image_usecase.dart';
 /// 负责处理标记点表单的业务逻辑和状态管理
 class MarkPointFormProvider extends ChangeNotifier {
   // 用例
-  final SaveImageUseCase _saveImageUseCase;
-  final GetSavedColorUseCase _getSavedColorUseCase;
-  final SaveColorUseCase _saveColorUseCase;
-  final GetAttributeHistoryUseCase _getAttributeHistoryUseCase;
-  final AddAttributeHistoryUseCase _addAttributeHistoryUseCase;
-  final CreateMarkPointUseCase _createMarkPointUseCase;
+  final SaveImageUseCase _saveImageUseCase = GetIt.I<SaveImageUseCase>();
+  final GetSavedColorUseCase _getSavedColorUseCase = GetIt.I<GetSavedColorUseCase>();
+  final SaveColorUseCase _saveColorUseCase = GetIt.I<SaveColorUseCase>();
+  final GetAttributeHistoryUseCase _getAttributeHistoryUseCase = GetIt.I<GetAttributeHistoryUseCase>();
+  final AddAttributeHistoryUseCase _addAttributeHistoryUseCase = GetIt.I<AddAttributeHistoryUseCase>();
+  final CreateMarkPointUseCase _createMarkPointUseCase = GetIt.I<CreateMarkPointUseCase>();
 
   // 表单状态
   final TextEditingController nameController = TextEditingController();
@@ -48,20 +49,7 @@ class MarkPointFormProvider extends ChangeNotifier {
   String? _errorMessage;
 
   // 构造函数
-  MarkPointFormProvider({
-    required SaveImageUseCase saveImageUseCase,
-    required GetSavedColorUseCase getSavedColorUseCase,
-    required SaveColorUseCase saveColorUseCase,
-    required GetAttributeHistoryUseCase getAttributeHistoryUseCase,
-    required AddAttributeHistoryUseCase addAttributeHistoryUseCase,
-    required CreateMarkPointUseCase createMarkPointUseCase,
-  }) : 
-    _saveImageUseCase = saveImageUseCase,
-    _getSavedColorUseCase = getSavedColorUseCase,
-    _saveColorUseCase = saveColorUseCase,
-    _getAttributeHistoryUseCase = getAttributeHistoryUseCase,
-    _addAttributeHistoryUseCase = addAttributeHistoryUseCase,
-    _createMarkPointUseCase = createMarkPointUseCase {
+  MarkPointFormProvider() {
     // 初始化
     _loadData();
   }

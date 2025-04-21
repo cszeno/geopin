@@ -1,13 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:get_it/get_it.dart';
 import '../repositories/preferences_repository.dart';
 
 /// 保存颜色用例
 /// 
 /// 将用户选择的颜色保存到偏好设置
 class SaveColorUseCase {
-  final PreferencesRepository _preferencesRepository;
-  
-  SaveColorUseCase(this._preferencesRepository);
+  final PreferencesRepository _preferencesRepository = GetIt.I<PreferencesRepository>();
   
   /// 执行用例，保存颜色
   /// 

@@ -2,6 +2,8 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:geopin/core/utils/app_logger.dart';
+import 'package:geopin/features/mark_point/data/repositories/image_repository_impl.dart';
 
 /// 全屏图片查看组件
 class FullScreenImageViewWidget extends StatefulWidget {
@@ -80,15 +82,65 @@ class _FullScreenImageViewWidgetState extends State<FullScreenImageViewWidget> {
                 });
               },
               itemBuilder: (context, index) {
-                return InteractiveViewer(
-                  minScale: 0.5,
-                  maxScale: 3.0,
-                  child: Center(
-                    child: Image.file(
-                      File(widget.images[index]),
-                      fit: BoxFit.contain,
-                    ),
-                  ),
+                return FutureBuilder<String>(
+                  future: ImageRepositoryImpl.getAbsoluteImagePath(widget.images[index]),
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return const Center(
+                        child: CircularProgressIndicator(color: Colors.white),
+                      );
+                    } else if (snapshot.hasError) {
+                      AppLogger.error('加载图片失败: ${snapshot.error}');
+                      return Center(
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            const Icon(Icons.error_outline, color: Colors.white, size: 48),
+                            const SizedBox(height: 16),
+                            Text(
+                              '无法加载图片',
+                              style: const TextStyle(color: Colors.white),
+                            ),
+                            Text(
+                              '路径: ${widget.images[index]}',
+                              style: TextStyle(color: Colors.grey[400], fontSize: 12),
+                            ),
+                          ],
+                        ),
+                      );
+                    } else if (snapshot.hasData) {
+                      return InteractiveViewer(
+                        minScale: 0.5,
+                        maxScale: 3.0,
+                        child: Center(
+                          child: Image.file(
+                            File(snapshot.data!),
+                            fit: BoxFit.contain,
+                            errorBuilder: (context, error, stackTrace) {
+                              AppLogger.error('渲染图片失败: $error');
+                              return Center(
+                                child: Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    const Icon(Icons.broken_image, color: Colors.white, size: 48),
+                                    const SizedBox(height: 16),
+                                    const Text(
+                                      '图片格式错误或已损坏',
+                                      style: TextStyle(color: Colors.white),
+                                    ),
+                                  ],
+                                ),
+                              );
+                            },
+                          ),
+                        ),
+                      );
+                    } else {
+                      return const Center(
+                        child: Text('未找到图片', style: TextStyle(color: Colors.white)),
+                      );
+                    }
+                  },
                 );
               },
             ),

@@ -1,3 +1,4 @@
+import 'package:get_it/get_it.dart';
 
 import '../../domain/entities/mark_point_entity.dart';
 import '../../domain/repositories/mark_point_repository.dart';
@@ -11,12 +12,10 @@ import '../models/mark_point_model.dart';
 /// 负责数据的CRUD操作，并确保数据的一致性。
 class MarkPointRepositoryImpl implements MarkPointRepository {
   /// 本地数据源
-  final MarkPointLocalDataSource localDataSource;
+  final MarkPointLocalDataSource localDataSource = GetIt.I<MarkPointLocalDataSource>();
 
   /// 构造函数
-  /// 
-  /// 注入所需的数据源依赖
-  MarkPointRepositoryImpl({required this.localDataSource});
+  MarkPointRepositoryImpl();
 
   @override
   Future<int> addMarkPoint(MarkPointEntity markPointEntity) async {

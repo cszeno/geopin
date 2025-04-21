@@ -40,7 +40,7 @@ class MarkPointLocalDataSourceImpl implements MarkPointLocalDataSource {
   static const String tableName = DatabaseService.markPointsTable;
 
   /// 构造函数
-  MarkPointLocalDataSourceImpl({required this.database});
+  MarkPointLocalDataSourceImpl({required Database database}) : database = database;
 
   /// 工厂方法，初始化并返回数据源实例
   ///
@@ -93,11 +93,12 @@ class MarkPointLocalDataSourceImpl implements MarkPointLocalDataSource {
       'longitude': model.longitude,
       'project_id': model.projectId,
       'elevation': model.elevation,
-      'color': model.color?.value,
+      'icon_color': model.color?.value,
       'img_path': _encodeImgPaths(model.imgPath),
       'attributes': _encodeAttributes(model.attributes),
       'created_at': model.createdAt.millisecondsSinceEpoch,
       'updated_at': model.updatedAt.millisecondsSinceEpoch,
+      'uuid': model.uuid,
     };
   }
 

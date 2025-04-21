@@ -1,5 +1,6 @@
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
+import 'package:get_it/get_it.dart';
 
 /// 本地存储服务
 /// 封装SharedPreferences，提供应用级别的数据持久化服务
@@ -18,6 +19,23 @@ class SPUtil {
   
   /// 获取单例实例
   factory SPUtil() => _instance;
+  
+  /// 获取通过GetIt注册的实例（如果已注册）
+  static SPUtil get I {
+    if (GetIt.I.isRegistered<SPUtil>()) {
+      return GetIt.I<SPUtil>();
+    }
+    return _instance;
+  }
+  
+  /// 注册到GetIt
+  static Future<void> registerInGetIt() async {
+    if (!GetIt.I.isRegistered<SPUtil>()) {
+      final instance = SPUtil();
+      await instance.init();
+      GetIt.I.registerSingleton<SPUtil>(instance);
+    }
+  }
   
   /// 内部构造函数
   SPUtil._internal();

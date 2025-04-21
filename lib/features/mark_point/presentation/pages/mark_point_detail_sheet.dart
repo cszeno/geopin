@@ -4,10 +4,12 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
+import '../../../../core/utils/app_logger.dart';
 import '../../domain/entities/mark_point_entity.dart';
 import '../providers/mark_point_provider.dart';
 import '../widgets/full_screen_image_view_widget.dart';
 import 'mark_point_form_page.dart';
+import '../../data/repositories/image_repository_impl.dart';
 
 /// 标记点详情底部弹窗
 class MarkPointDetailSheet extends StatelessWidget {
@@ -218,10 +220,57 @@ class MarkPointDetailSheet extends StatelessWidget {
                   margin: const EdgeInsets.only(right: 8),
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(8),
-                    image: DecorationImage(
-                      image: FileImage(File(markPoint.imgPath![index])),
-                      fit: BoxFit.cover,
-                    ),
+                  ),
+                  child: FutureBuilder<String>(
+                    future: ImageRepositoryImpl.getAbsoluteImagePath(markPoint.imgPath![index]),
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return const Center(
+                          child: CircularProgressIndicator(),
+                        );
+                      } else if (snapshot.hasError) {
+                        AppLogger.error('加载缩略图失败: ${snapshot.error}');
+                        return Container(
+                          decoration: BoxDecoration(
+                            color: Colors.grey[200],
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: const Center(
+                            child: Icon(Icons.error_outline, color: Colors.red),
+                          ),
+                        );
+                      } else if (snapshot.hasData) {
+                        return ClipRRect(
+                          borderRadius: BorderRadius.circular(8),
+                          child: Image.file(
+                            File(snapshot.data!),
+                            fit: BoxFit.cover,
+                            errorBuilder: (context, error, stackTrace) {
+                              AppLogger.error('渲染缩略图失败: $error');
+                              return Container(
+                                decoration: BoxDecoration(
+                                  color: Colors.grey[200],
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                                child: const Center(
+                                  child: Icon(Icons.broken_image, color: Colors.red),
+                                ),
+                              );
+                            },
+                          ),
+                        );
+                      } else {
+                        return Container(
+                          decoration: BoxDecoration(
+                            color: Colors.grey[200],
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: const Center(
+                            child: Icon(Icons.image_not_supported),
+                          ),
+                        );
+                      }
+                    },
                   ),
                 ),
               );
@@ -321,7 +370,7 @@ class MarkPointDetailSheet extends StatelessWidget {
         onSubmit: (updatedMarkPoint) {
           // 更新标记点
           final markPointProvider = Provider.of<MarkPointProvider>(context, listen: false);
-          // markPointProvider.updatePoint(updatedMarkPoint);
+          markPointProvider.updatePoint(updatedMarkPoint);
         },
       ),
     );

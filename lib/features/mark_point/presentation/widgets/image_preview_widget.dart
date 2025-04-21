@@ -1,6 +1,8 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:geopin/core/utils/app_logger.dart';
+import 'package:geopin/features/mark_point/data/repositories/image_repository_impl.dart';
 
 /// 图片预览组件
 /// 
@@ -118,10 +120,39 @@ class ImagePreviewWidget extends StatelessWidget {
           margin: const EdgeInsets.only(right: 8),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(8),
-            image: DecorationImage(
-              image: FileImage(File(selectedImagePaths[index])),
-              fit: BoxFit.cover,
-            ),
+          ),
+          child: FutureBuilder<String>(
+            future: ImageRepositoryImpl.getAbsoluteImagePath(selectedImagePaths[index]),
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return const Center(
+                  child: CircularProgressIndicator(),
+                );
+              } else if (snapshot.hasError) {
+                AppLogger.error('加载图片失败: ${snapshot.error}');
+                return Center(
+                  child: Icon(Icons.error_outline, color: Colors.red),
+                );
+              } else if (snapshot.hasData) {
+                return ClipRRect(
+                  borderRadius: BorderRadius.circular(8),
+                  child: Image.file(
+                    File(snapshot.data!),
+                    fit: BoxFit.cover,
+                    errorBuilder: (context, error, stackTrace) {
+                      AppLogger.error('渲染图片失败: $error');
+                      return Center(
+                        child: Icon(Icons.broken_image, color: Colors.red),
+                      );
+                    },
+                  ),
+                );
+              } else {
+                return Center(
+                  child: Icon(Icons.image_not_supported),
+                );
+              }
+            },
           ),
         ),
         Positioned(

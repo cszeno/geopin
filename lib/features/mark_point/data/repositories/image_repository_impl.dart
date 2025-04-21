@@ -5,15 +5,19 @@ import 'package:image_picker/image_picker.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart' as path;
 import 'package:uuid/uuid.dart';
+import 'package:get_it/get_it.dart';
 
 import '../../domain/repositories/image_repository.dart';
 import '../datasources/image_data_source.dart';
 
 /// 图片仓库实现
 class ImageRepositoryImpl implements ImageRepository {
-  final ImageDataSource _imageDataSource;
+  final ImageDataSource _imageDataSource = GetIt.I<ImageDataSource>();
   
-  ImageRepositoryImpl(this._imageDataSource);
+  // 图片存储子目录名称
+  static const String imageSubDir = 'mark_point_images';
+  
+  ImageRepositoryImpl();
   
   @override
   Future<String?> pickAndSaveImage(ImageSource source) async {
@@ -41,7 +45,10 @@ class ImageRepositoryImpl implements ImageRepository {
   @override
   Future<bool> deleteImage(String imagePath) async {
     try {
-      final file = File(imagePath);
+      // 转换为绝对路径
+      final absolutePath = await _getAbsoluteImagePath(imagePath);
+      
+      final file = File(absolutePath);
       if (await file.exists()) {
         await file.delete();
         return true;
@@ -53,13 +60,13 @@ class ImageRepositoryImpl implements ImageRepository {
     }
   }
   
-  /// 将图片保存到应用内部目录
+  /// 将图片保存到应用内部目录，返回相对路径
   Future<String> _saveImageToAppDirectory(String imagePath) async {
     try {
       // 获取应用文档目录
       final appDir = await getApplicationDocumentsDirectory();
       // 创建图片存储目录
-      final imageDir = Directory('${appDir.path}/mark_point_images');
+      final imageDir = Directory('${appDir.path}/$imageSubDir');
       if (!await imageDir.exists()) {
         await imageDir.create(recursive: true);
       }
@@ -72,12 +79,38 @@ class ImageRepositoryImpl implements ImageRepository {
       final File sourceFile = File(imagePath);
       await sourceFile.copy(targetPath);
       
-      AppLogger.debug('保存图片成功: $targetPath');
-      return targetPath;
+      // 存储相对路径，而不是绝对路径
+      final relativePath = '$imageSubDir/$fileName';
+      AppLogger.debug('保存图片成功，相对路径: $relativePath');
+      return relativePath;
     } catch (e) {
       AppLogger.error('保存图片到应用目录失败: $e');
       // 如果保存失败，返回原路径
       return imagePath;
     }
+  }
+  
+  /// 获取图片的绝对路径
+  Future<String> _getAbsoluteImagePath(String relativePath) async {
+    // 如果已经是绝对路径，则直接返回
+    if (relativePath.startsWith('/')) {
+      return relativePath;
+    }
+    
+    // 获取应用文档目录
+    final appDir = await getApplicationDocumentsDirectory();
+    return '${appDir.path}/$relativePath';
+  }
+  
+  /// 获取图片的绝对路径（静态方法，可供外部使用）
+  static Future<String> getAbsoluteImagePath(String relativePath) async {
+    // 如果已经是绝对路径，则直接返回
+    if (relativePath.startsWith('/')) {
+      return relativePath;
+    }
+    
+    // 获取应用文档目录
+    final appDir = await getApplicationDocumentsDirectory();
+    return '${appDir.path}/$relativePath';
   }
 } 
