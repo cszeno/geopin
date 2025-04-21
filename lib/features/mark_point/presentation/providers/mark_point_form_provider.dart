@@ -10,7 +10,7 @@ import '../../domain/usecases/get_saved_color_usecase.dart';
 import '../../domain/usecases/save_color_usecase.dart';
 import '../../domain/usecases/save_image_usecase.dart';
 
-/// 标记点表单的视图模型
+/// 标记点表单的Provider
 /// 
 /// 负责处理标记点表单的业务逻辑和状态管理
 class MarkPointFormProvider extends ChangeNotifier {

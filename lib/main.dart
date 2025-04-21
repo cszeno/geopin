@@ -10,6 +10,7 @@ import 'package:geopin/shared/theme/providers/theme_provider.dart';
 import 'package:logging/logging.dart';
 import 'package:provider/provider.dart';
 import 'package:geopin/core/location/providers/location_service_provider.dart';
+import 'core/di/service_locator.dart';
 
 import 'core/router/app_router.dart';
 import 'core/utils/app_logger.dart';
@@ -19,9 +20,13 @@ import 'i18n/providers/locale_provider.dart';
 
 /// 应用入口
 void main() async {
+  // 确保Flutter绑定初始化
+  WidgetsFlutterBinding.ensureInitialized();
+  
+  // 初始化依赖注入
+  ServiceLocator.init();
 
   // 初始化日志系统
-  WidgetsFlutterBinding.ensureInitialized();
   await AppLogger.init(
     config: LogConfig(
       level: Level.ALL,

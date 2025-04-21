@@ -76,7 +76,7 @@ class CrossCursorMarker extends StatelessWidget {
                   constraints.maxHeight > 0 ? constraints.maxHeight : double
                       .infinity,
                 ) : Size(size, size),
-                painter: _CrosshairPainter(
+                painter: _CrossCursorPainter(
                   color: color,
                   strokeWidth: strokeWidth,
                   isFullScreen: isFullScreen,
@@ -113,12 +113,12 @@ class CrossCursorMarker extends StatelessWidget {
 }
 
 /// 十字光标绘制器
-class _CrosshairPainter extends CustomPainter {
+class _CrossCursorPainter extends CustomPainter {
   final Color color;
   final double strokeWidth;
   final bool isFullScreen;
 
-  _CrosshairPainter({
+  _CrossCursorPainter({
     required this.color,
     required this.strokeWidth,
     this.isFullScreen = false,
@@ -202,7 +202,7 @@ class _CrosshairPainter extends CustomPainter {
   }
 
   @override
-  bool shouldRepaint(_CrosshairPainter oldDelegate) {
+  bool shouldRepaint(_CrossCursorPainter oldDelegate) {
     return oldDelegate.color != color ||
         oldDelegate.strokeWidth != strokeWidth;
   }

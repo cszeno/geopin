@@ -25,11 +25,7 @@ class ImagePreviewWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (selectedImagePaths.isEmpty) {
-      return _buildEmptyState(context);
-    } else {
-      return _buildPreviewList(context);
-    }
+    return _buildPreviewList(context);
   }
 
   /// 构建空状态UI
@@ -94,17 +90,20 @@ class ImagePreviewWidget extends StatelessWidget {
             ),
           ],
         ),
-        const SizedBox(height: 8),
-        SizedBox(
-          height: 100,
-          child: ListView.builder(
-            scrollDirection: Axis.horizontal,
-            itemCount: selectedImagePaths.length,
-            itemBuilder: (context, index) {
-              return _buildImageItem(context, index);
-            },
-          ),
-        ),
+        if(selectedImagePaths.isNotEmpty)
+          ...[
+            const SizedBox(height: 8),
+            SizedBox(
+              height: 100,
+              child: ListView.builder(
+                scrollDirection: Axis.horizontal,
+                itemCount: selectedImagePaths.length,
+                itemBuilder: (context, index) {
+                  return _buildImageItem(context, index);
+                },
+              ),
+            ),
+          ]
       ],
     );
   }
