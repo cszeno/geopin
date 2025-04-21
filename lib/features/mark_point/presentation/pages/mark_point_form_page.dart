@@ -13,7 +13,7 @@ import '../providers/mark_point_form_provider.dart';
 /// 标记点表单屏幕
 /// 
 /// 使用Clean Architecture重构后的标记点表单界面
-class MarkPointFormPage extends StatelessWidget {
+class MarkPointFormScreen extends StatelessWidget {
   /// 当前位置的纬度
   final double latitude;
   
@@ -27,22 +27,22 @@ class MarkPointFormPage extends StatelessWidget {
   final Function(MarkPointEntity) onSubmit;
   
   /// 构造函数
-  const MarkPointFormPage({
-    Key? key, 
+  const MarkPointFormScreen({
+    super.key,
     required this.latitude, 
     required this.longitude, 
     required this.onSubmit,
     this.altitude = 0
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider<MarkPointFormProvider>(
       create: (context) => GetIt.instance<MarkPointFormProvider>(),
       child: Consumer<MarkPointFormProvider>(
-        builder: (context, viewModel, _) {
+        builder: (context, provider, _) {
           return _MarkPointFormView(
-            viewModel: viewModel,
+            provider: provider,
             latitude: latitude,
             longitude: longitude,
             altitude: altitude,
@@ -56,20 +56,20 @@ class MarkPointFormPage extends StatelessWidget {
 
 /// 标记点表单视图
 class _MarkPointFormView extends StatelessWidget {
-  final MarkPointFormProvider viewModel;
+  final MarkPointFormProvider provider;
   final double latitude;
   final double longitude;
   final double altitude;
   final Function(MarkPointEntity) onSubmit;
 
   const _MarkPointFormView({
-    Key? key,
-    required this.viewModel,
+    super.key,
+    required this.provider,
     required this.latitude,
     required this.longitude,
     required this.altitude,
     required this.onSubmit,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -132,7 +132,7 @@ class _MarkPointFormView extends StatelessWidget {
               onTap: () => FocusScope.of(context).unfocus(),
               behavior: HitTestBehavior.translucent,
               child: Form(
-                key: viewModel.formKey,
+                key: provider.formKey,
                 child: SingleChildScrollView(
                   padding: EdgeInsets.only(
                     left: 16,
@@ -144,14 +144,9 @@ class _MarkPointFormView extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      // 显示当前坐标
-                      _buildCoordinatesSection(context),
-                      
-                      const SizedBox(height: 16),
-                      
                       // 名称输入框
                       TextFormField(
-                        controller: viewModel.nameController,
+                        controller: provider.nameController,
                         decoration: InputDecoration(
                           labelText: '标记点名称',
                           hintText: '输入标记点名称',
@@ -168,21 +163,26 @@ class _MarkPointFormView extends StatelessWidget {
                           return null;
                         },
                       ),
-                      
+
                       const SizedBox(height: 12),
+
+                      // 显示当前坐标
+                      _buildCoordinatesSection(context),
+                      
+                      const SizedBox(height: 16),
                       
                       // 颜色选择器
                       _buildColorPickerSection(context),
                       
                       const SizedBox(height: 16),
-                      
-                      // 图片选择部分
-                      _buildImagePreviewSection(context),
-                      
-                      const SizedBox(height: 16),
-                      
+
                       // 自定义属性部分
                       _buildAttributesSection(context),
+
+                      const SizedBox(height: 16),
+
+                      // 图片选择部分
+                      _buildImagePreviewSection(context),
                     ],
                   ),
                 ),
@@ -190,7 +190,7 @@ class _MarkPointFormView extends StatelessWidget {
             ),
             
             // 加载指示器
-            if (viewModel.isLoading)
+            if (provider.isLoading)
               const Center(
                 child: CircularProgressIndicator(),
               ),
@@ -267,7 +267,7 @@ class _MarkPointFormView extends StatelessWidget {
               width: 20,
               height: 20,
               decoration: BoxDecoration(
-                color: viewModel.selectedColor,
+                color: provider.selectedColor,
                 shape: BoxShape.circle,
                 border: Border.all(color: Colors.white, width: 1),
               ),
@@ -276,9 +276,9 @@ class _MarkPointFormView extends StatelessWidget {
         ),
         const SizedBox(height: 8),
         ColorPickerWidget(
-          selectedColor: viewModel.selectedColor,
-          availableColors: viewModel.availableColors,
-          onColorSelected: (color) => viewModel.selectColor(color),
+          selectedColor: provider.selectedColor,
+          availableColors: provider.availableColors,
+          onColorSelected: (color) => provider.selectColor(color),
         ),
       ],
     );
@@ -295,9 +295,9 @@ class _MarkPointFormView extends StatelessWidget {
         ),
         const SizedBox(height: 8),
         ImagePreviewWidget(
-          selectedImagePaths: viewModel.selectedImagePaths,
+          selectedImagePaths: provider.selectedImagePaths,
           onAddImage: () => _showImageSourceDialog(context),
-          onRemoveImage: (index) => viewModel.removeImage(index),
+          onRemoveImage: (index) => provider.removeImage(index),
         ),
       ],
     );
@@ -331,7 +331,7 @@ class _MarkPointFormView extends StatelessWidget {
         const SizedBox(height: 8),
         
         // 当前属性标签
-        if (viewModel.currentAttributes.isEmpty)
+        if (provider.currentAttributes.isEmpty)
           Padding(
             padding: const EdgeInsets.symmetric(vertical: 8),
             child: Text(
@@ -346,8 +346,8 @@ class _MarkPointFormView extends StatelessWidget {
           Wrap(
             spacing: 8,
             runSpacing: 8,
-            children: List.generate(viewModel.currentAttributes.length, (index) {
-              final attribute = viewModel.currentAttributes[index];
+            children: List.generate(provider.currentAttributes.length, (index) {
+              final attribute = provider.currentAttributes[index];
               return AttributeTagWidget(
                 keyText: attribute['key'] ?? '',
                 valueText: attribute['value'] ?? '',
@@ -358,7 +358,7 @@ class _MarkPointFormView extends StatelessWidget {
           ),
           
         // 历史属性标签
-        if (viewModel.historyAttributes.isNotEmpty) ...[
+        if (provider.historyAttributes.isNotEmpty) ...[
           const SizedBox(height: 12),
           Text(
             '历史属性',
@@ -373,12 +373,12 @@ class _MarkPointFormView extends StatelessWidget {
           Wrap(
             spacing: 8,
             runSpacing: 8,
-            children: viewModel.historyAttributes.map((attr) {
+            children: provider.historyAttributes.map((attr) {
               final key = attr['key'] ?? '';
               final value = attr['value'] ?? '';
               
               // 检查当前属性列表中是否已存在相同属性
-              final isAlreadyAdded = viewModel.currentAttributes.any(
+              final isAlreadyAdded = provider.currentAttributes.any(
                 (currentAttr) => currentAttr['key'] == key && currentAttr['value'] == value
               );
               
@@ -388,7 +388,7 @@ class _MarkPointFormView extends StatelessWidget {
                 isActive: !isAlreadyAdded,
                 onTap: isAlreadyAdded 
                     ? null 
-                    : () => viewModel.addHistoryAttribute(attr),
+                    : () => provider.addHistoryAttribute(attr),
               );
             }).toList(),
           ),
@@ -421,7 +421,7 @@ class _MarkPointFormView extends StatelessWidget {
 
   /// 提交表单
   void _submitForm(BuildContext context) {
-    final markPoint = viewModel.createMarkPoint(
+    final markPoint = provider.createMarkPoint(
       latitude: latitude,
       longitude: longitude,
       altitude: altitude,
@@ -450,7 +450,7 @@ class _MarkPointFormView extends StatelessWidget {
                 Navigator.pop(context);
                 // 添加延迟，确保底部菜单完全关闭
                 Future.delayed(const Duration(milliseconds: 100), () {
-                  viewModel.pickImage(ImageSource.camera);
+                  provider.pickImage(ImageSource.camera);
                 });
               },
             ),
@@ -462,7 +462,7 @@ class _MarkPointFormView extends StatelessWidget {
                 Navigator.pop(context);
                 // 添加延迟，确保底部菜单完全关闭
                 Future.delayed(const Duration(milliseconds: 100), () {
-                  viewModel.pickImage(ImageSource.gallery);
+                  provider.pickImage(ImageSource.gallery);
                 });
               },
             ),
@@ -537,9 +537,9 @@ class _MarkPointFormView extends StatelessWidget {
                 
                 // 然后更新状态
                 if (editIndex != null) {
-                  viewModel.updateAttribute(editIndex, trimmedKey, trimmedValue);
+                  provider.updateAttribute(editIndex, trimmedKey, trimmedValue);
                 } else {
-                  viewModel.addAttribute(trimmedKey, trimmedValue);
+                  provider.addAttribute(trimmedKey, trimmedValue);
                 }
               },
             ),
@@ -552,7 +552,7 @@ class _MarkPointFormView extends StatelessWidget {
   /// 显示属性选项菜单（编辑/删除）
   void _showAttributeOptions(BuildContext context, int index) {
     // 提前获取属性信息，避免在回调中访问可能已变更的数据
-    final attribute = viewModel.currentAttributes[index];
+    final attribute = provider.currentAttributes[index];
     
     showModalBottomSheet(
       context: context,
@@ -568,7 +568,7 @@ class _MarkPointFormView extends StatelessWidget {
                 Navigator.pop(bottomSheetContext);
                 
                 // 然后打开编辑对话框
-                if (index < viewModel.currentAttributes.length) {
+                if (index < provider.currentAttributes.length) {
                   _showAttributeEditDialog(
                     context,
                     initialKey: attribute['key'] ?? '',
@@ -586,7 +586,7 @@ class _MarkPointFormView extends StatelessWidget {
                 Navigator.pop(bottomSheetContext);
                 
                 // 然后执行删除操作
-                viewModel.removeAttribute(index);
+                provider.removeAttribute(index);
               },
             ),
           ],
