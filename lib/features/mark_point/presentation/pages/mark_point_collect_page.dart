@@ -11,6 +11,7 @@ import '../../domain/entities/mark_point_entity.dart';
 import '../widgets/crosshair_marker.dart';
 import '../widgets/nav_bar.dart';
 import 'mark_point_form_page.dart';
+import 'mark_point_detail_sheet.dart';
 
 class MarkPointCollectPage extends StatefulWidget {
   const MarkPointCollectPage({super.key});
@@ -137,7 +138,7 @@ class _MarkPointCollectPageState extends State<MarkPointCollectPage> {
           shape: const RoundedRectangleBorder(
             borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
           ),
-          builder: (BuildContext bottomSheetContext) => MarkPointFormScreen(
+          builder: (BuildContext bottomSheetContext) => MarkPointFormPage(
             latitude: _currentCenter.latitude,
             longitude: _currentCenter.longitude,
             onSubmit: (markPoint) {
@@ -178,6 +179,9 @@ class _MarkPointCollectPageState extends State<MarkPointCollectPage> {
       rotate: true,
       alignment: Alignment.topCenter,
       child: GestureDetector(
+        onTap: () {
+          _showMarkPointDetail(context, markPointEntity);
+        },
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -186,6 +190,16 @@ class _MarkPointCollectPageState extends State<MarkPointCollectPage> {
           ],
         ),
       ),
+    );
+  }
+
+  /// 显示标记点详情
+  void _showMarkPointDetail(BuildContext context, MarkPointEntity markPoint) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) => MarkPointDetailSheet(markPoint: markPoint),
     );
   }
 

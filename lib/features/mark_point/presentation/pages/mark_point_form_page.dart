@@ -13,7 +13,7 @@ import '../providers/mark_point_form_provider.dart';
 /// 标记点表单屏幕
 /// 
 /// 使用Clean Architecture重构后的标记点表单界面
-class MarkPointFormScreen extends StatelessWidget {
+class MarkPointFormPage extends StatelessWidget {
   /// 当前位置的纬度
   final double latitude;
   
@@ -27,7 +27,7 @@ class MarkPointFormScreen extends StatelessWidget {
   final Function(MarkPointEntity) onSubmit;
   
   /// 构造函数
-  const MarkPointFormScreen({
+  const MarkPointFormPage({
     super.key,
     required this.latitude, 
     required this.longitude, 
@@ -78,7 +78,7 @@ class _MarkPointFormView extends StatelessWidget {
     
     return Container(
       // 高度限制
-      constraints: BoxConstraints(maxHeight: size.height * 0.6),
+      constraints: BoxConstraints(maxHeight: size.height * 0.8),
       // 圆角装饰
       decoration: const BoxDecoration(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
