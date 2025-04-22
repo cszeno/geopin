@@ -40,6 +40,12 @@ class AppRouter {
           path: '/language-settings',
           builder: (context, state) => const LanguageSettingsPage(),
         ),
+
+        // 标记点数据
+        GoRoute(
+          path: '/mark_point_data',
+          builder: (context, state) => const MarkPointDataPage(),
+        ),
       ],
 
 
