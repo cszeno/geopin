@@ -145,23 +145,46 @@ class _MarkPointFormView extends StatelessWidget {
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       // 名称输入框
-                      TextFormField(
-                        controller: provider.nameController,
-                        decoration: InputDecoration(
-                          labelText: '标记点名称',
-                          hintText: '输入标记点名称',
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(10),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: TextFormField(
+                              controller: provider.nameController,
+                              decoration: InputDecoration(
+                                labelText: '标记点名称',
+                                hintText: '输入标记点名称',
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
+                                prefixIcon: const Icon(Icons.push_pin),
+                                contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+                              ),
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return '请输入标记点名称';
+                                }
+                                return null;
+                              },
+                            ),
                           ),
-                          prefixIcon: const Icon(Icons.push_pin),
-                          contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
-                        ),
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return '请输入标记点名称';
-                          }
-                          return null;
-                        },
+                          const SizedBox(width: 8),
+                          Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Switch(
+                                value: provider.autoNumberingEnabled,
+                                onChanged: (value) => provider.setAutoNumberingEnabled(value),
+                              ),
+                              Text(
+                                '自动编号',
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  color: Colors.grey[600],
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
                       ),
 
                       const SizedBox(height: 12),
@@ -425,6 +448,15 @@ class _MarkPointFormView extends StatelessWidget {
     
     if (markPoint != null) {
       onSubmit(markPoint);
+      
+      // 如果启用了自动编号，在提交后应用新编号
+      if (provider.autoNumberingEnabled) {
+        // 使用短延迟确保提交回调完成
+        Future.delayed(const Duration(milliseconds: 100), () {
+          provider.applyCurrentNumbering();
+        });
+      }
+      
       Navigator.of(context).pop();
     }
   }
