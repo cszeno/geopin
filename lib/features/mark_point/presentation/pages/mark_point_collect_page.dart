@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:geopin/core/location/providers/location_service_provider.dart';
-import 'package:geopin/core/utils/app_logger.dart';
 import 'package:geopin/features/mark_point/presentation/providers/mark_point_provider.dart';
 import 'package:go_router/go_router.dart';
 import 'package:latlong2/latlong.dart';
@@ -117,27 +116,7 @@ class _MarkPointCollectPageState extends State<MarkPointCollectPage> {
                     ),
                   ),
                 ),
-    
-              // 刷新按钮 - 仅在必要时手动刷新
-              Positioned(
-                top: 50,
-                right: 16,
-                child: FloatingActionButton(
-                  mini: true,
-                  heroTag: 'refreshBtn',
-                  backgroundColor: Colors.white,
-                  onPressed: markPointProvider.isLoading 
-                      ? null 
-                      : () => markPointProvider.loadAllMarkPoints(),
-                  child: Icon(
-                    Icons.refresh,
-                    color: markPointProvider.isLoading 
-                        ? Colors.grey 
-                        : Theme.of(context).primaryColor,
-                  ),
-                ),
-              ),
-    
+
               Positioned(
                 left: 20,
                 right: 20,
