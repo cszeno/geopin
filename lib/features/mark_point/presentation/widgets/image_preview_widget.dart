@@ -74,21 +74,26 @@ class ImagePreviewWidget extends StatelessWidget {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
+            // Text(
+            //   '已选择 ${selectedImagePaths.length} 张图片',
+            //   style: const TextStyle(
+            //     fontWeight: FontWeight.w500,
+            //   ),
+            // ),
             Text(
-              '已选择 ${selectedImagePaths.length} 张图片',
-              style: const TextStyle(
-                fontWeight: FontWeight.w500,
-              ),
+              '图片',
+              style: Theme.of(context).textTheme.titleMedium,
             ),
-            IconButton(
-              icon: Icon(
-                Icons.add_photo_alternate,
-                color: Theme.of(context).colorScheme.primary,
+            ElevatedButton.icon(
+              onPressed: () => onAddImage,
+              icon: const Icon(Icons.add, size: 18),
+              label: const Text('添加图片'),
+              style: ElevatedButton.styleFrom(
+                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
               ),
-              onPressed: onAddImage,
-              tooltip: '添加更多图片',
-              padding: EdgeInsets.zero,
-              constraints: const BoxConstraints(),
             ),
           ],
         ),

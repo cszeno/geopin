@@ -170,17 +170,21 @@ class _MarkPointFormView extends StatelessWidget {
                       _buildCoordinatesSection(context),
                       
                       const SizedBox(height: 16),
-                      
+
+                      Divider(),
                       // 颜色选择器
                       _buildColorPickerSection(context),
                       
                       const SizedBox(height: 16),
+
+                      Divider(),
 
                       // 自定义属性部分
                       _buildAttributesSection(context),
 
                       const SizedBox(height: 16),
 
+                      Divider(),
                       // 图片选择部分
                       _buildImagePreviewSection(context),
                     ],
@@ -211,11 +215,6 @@ class _MarkPointFormView extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            '当前坐标',
-            style: Theme.of(context).textTheme.titleMedium,
-          ),
-          const SizedBox(height: 4),
           Row(
             children: [
               Expanded(
@@ -289,11 +288,11 @@ class _MarkPointFormView extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          '图片',
-          style: Theme.of(context).textTheme.titleMedium,
-        ),
-        const SizedBox(height: 8),
+        // Text(
+        //   '图片',
+        //   style: Theme.of(context).textTheme.titleMedium,
+        // ),
+        // const SizedBox(height: 8),
         ImagePreviewWidget(
           selectedImagePaths: provider.selectedImagePaths,
           onAddImage: () => _showImageSourceDialog(context),
@@ -328,18 +327,13 @@ class _MarkPointFormView extends StatelessWidget {
             ),
           ],
         ),
-        const SizedBox(height: 8),
-        
         // 当前属性标签
         if (provider.currentAttributes.isEmpty)
-          Padding(
-            padding: const EdgeInsets.symmetric(vertical: 8),
-            child: Text(
-              '暂无自定义属性',
-              style: TextStyle(
-                color: Colors.grey.shade600,
-                fontStyle: FontStyle.italic,
-              ),
+          Text(
+            '暂无自定义属性',
+            style: TextStyle(
+              color: Colors.grey.shade600,
+              fontStyle: FontStyle.italic,
             ),
           )
         else
@@ -351,6 +345,7 @@ class _MarkPointFormView extends StatelessWidget {
               return AttributeTagWidget(
                 keyText: attribute['key'] ?? '',
                 valueText: attribute['value'] ?? '',
+                iconData: Icons.edit_outlined,
                 isActive: true,
                 onTap: () => _showAttributeOptions(context, index),
               );
@@ -359,7 +354,7 @@ class _MarkPointFormView extends StatelessWidget {
           
         // 历史属性标签
         if (provider.historyAttributes.isNotEmpty) ...[
-          const SizedBox(height: 12),
+          const SizedBox(height: 8),
           Text(
             '历史属性',
             style: TextStyle(
@@ -386,6 +381,7 @@ class _MarkPointFormView extends StatelessWidget {
                 keyText: key,
                 valueText: value,
                 isActive: !isAlreadyAdded,
+                iconData: Icons.add_circle_outline,
                 onTap: isAlreadyAdded 
                     ? null 
                     : () => provider.addHistoryAttribute(attr),

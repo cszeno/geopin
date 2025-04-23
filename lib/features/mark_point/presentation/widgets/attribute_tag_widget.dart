@@ -12,18 +12,22 @@ class AttributeTagWidget extends StatelessWidget {
   
   /// 是否可点击状态
   final bool isActive;
+
+  /// 是否可点击状态
+  final IconData iconData;
   
   /// 点击回调
   final VoidCallback? onTap;
   
   /// 构造函数
   const AttributeTagWidget({
-    Key? key,
+    super.key,
     required this.keyText,
     required this.valueText,
+    required this.iconData,
     this.isActive = true,
     this.onTap,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -57,16 +61,9 @@ class AttributeTagWidget extends StatelessWidget {
             if (isActive && onTap != null) ...[
               const SizedBox(width: 4),
               Icon(
-                Icons.edit_outlined,
+                iconData,
                 size: 14,
                 color: Theme.of(context).colorScheme.primary,
-              ),
-            ] else if (!isActive && onTap != null) ...[
-              const SizedBox(width: 4),
-              Icon(
-                Icons.add_circle_outline,
-                size: 14,
-                color: Theme.of(context).colorScheme.secondary,
               ),
             ]
           ],
