@@ -52,11 +52,11 @@ class CrossCursorMarker extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return _buildFullScreenCrosshair();
+    return _buildFullScreenCrosshair(context);
   }
 
   /// 构建十字光标
-  Widget _buildFullScreenCrosshair() {
+  Widget _buildFullScreenCrosshair(BuildContext context) {
     // 如果是none模式，则不显示任何内容
     if (crossharMode == CrossCursorMode.none) {
       return const SizedBox.shrink();
@@ -85,24 +85,27 @@ class CrossCursorMarker extends StatelessWidget {
             },
           ),
 
-          // 坐标显示 - 在屏幕中心上方
+          // 坐标显示 - 在屏幕中心下方
           Padding(
             padding: const EdgeInsets.only(top: 80), // 位于中心点下方
             child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
               decoration: BoxDecoration(
-                color: Colors.black.withOpacity(0.7),
-                borderRadius: BorderRadius.circular(4),
-                border: Border.all(color: color.withOpacity(0.5), width: 1),
+                color: Theme.of(context).cardColor,
+                borderRadius: BorderRadius.circular(8),
+                boxShadow: [
+                  BoxShadow(
+                    color: Theme.of(
+                      context,
+                    ).shadowColor.withOpacity(0.1),
+                    blurRadius: 4,
+                    offset: const Offset(0, 4),
+                  )
+                ],
               ),
               child: Text(
-                '${coordinate.latitude.toStringAsFixed(6)}°, ${coordinate
-                    .longitude.toStringAsFixed(6)}°',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 12,
-                  fontWeight: FontWeight.w500,
-                ),
+                'B:${coordinate.latitude.toStringAsFixed(6)}°, L:${coordinate.longitude.toStringAsFixed(6)}°',
+                style: Theme.of(context).textTheme.labelSmall,
               ),
             ),
           ),
