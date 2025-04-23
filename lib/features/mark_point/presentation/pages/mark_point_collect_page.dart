@@ -152,7 +152,7 @@ class _MarkPointCollectPageState extends State<MarkPointCollectPage> {
                                         ),
                                         const SizedBox(width: 4),
                                         Text(
-                                          "精度：${locationServiceProvider.currentLocation?.accuracy}m",
+                                          "精度：${locationServiceProvider.currentLocation?.accuracy.toStringAsFixed(2)}m",
                                           style: TextStyle(
                                             fontSize: 12,
                                             color:
@@ -168,31 +168,34 @@ class _MarkPointCollectPageState extends State<MarkPointCollectPage> {
                                 Container(
                                   height: 60,
                                   width: 1,
-                                  color: Theme.of(context).dividerColor.withOpacity(0.2),
+                                  color: Theme.of(
+                                    context,
+                                  ).dividerColor.withOpacity(0.2),
                                 ),
                                 const SizedBox(width: 8),
                                 Row(
                                   mainAxisSize: MainAxisSize.min,
                                   children: [
                                     Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
                                       children: [
                                         _buildCoordinateItem(
                                           null,
                                           "B:",
-                                          "${locationServiceProvider.currentLocation?.latitude}°",
+                                          "${locationServiceProvider.currentLocation?.latitude.toStringAsFixed(6)}°",
                                         ),
                                         const SizedBox(height: 4),
                                         _buildCoordinateItem(
                                           null,
                                           "L:",
-                                          "${locationServiceProvider.currentLocation?.longitude}°",
+                                          "${locationServiceProvider.currentLocation?.longitude.toStringAsFixed(6)}°",
                                         ),
                                         const SizedBox(height: 4),
                                         _buildCoordinateItem(
                                           null,
                                           "H:",
-                                          "${locationServiceProvider.currentLocation?.altitude}m",
+                                          "${locationServiceProvider.currentLocation?.altitude.toStringAsFixed(6)}m",
                                         ),
                                       ],
                                     ),
