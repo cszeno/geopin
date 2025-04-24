@@ -2,13 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:geopin/core/location/providers/location_service_provider.dart';
 import 'package:geopin/features/mark_point/presentation/providers/mark_point_provider.dart';
-import 'package:geopin/shared/theme/app_theme.dart';
 import 'package:go_router/go_router.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:provider/provider.dart';
 
 import '../../../../shared/mini_app/presentation/widgets/mini_app_grid_widget.dart';
 import '../../domain/entities/mark_point_entity.dart';
+import '../widgets/animated_location_marker.dart';
 import '../widgets/crosshair_marker.dart';
 import '../widgets/nav_bar.dart';
 import 'mark_point_form_page.dart';
@@ -55,9 +55,27 @@ class _MarkPointCollectPageState extends State<MarkPointCollectPage> {
             children: [
               Consumer<LocationServiceProvider>(
                 builder: (context, locationServiceProvider, child) {
+                  final currentLocation =
+                      locationServiceProvider.currentLocation;
+
+                  if (currentLocation != null) {
+                    markers.add(
+                      Marker(
+                        point: currentLocation.latLng,
+                        width: 30,
+                        height: 30,
+                        child: const AnimatedLocationMarker(
+                          color: Colors.red,
+                          size: 5,
+                        ),
+                      ),
+                    );
+                  }
+
                   return FlutterMap(
                     options: MapOptions(
-                      initialCenter: _currentCenter,
+                      initialCenter:
+                          locationServiceProvider.currentLocation?.latLng,
                       onMapEvent: (event) {
                         if (event is MapEventMove) {
                           setState(() {

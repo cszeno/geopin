@@ -1,3 +1,5 @@
+import 'package:latlong2/latlong.dart';
+
 /// 位置信息实体类
 /// 
 /// 包含位置的所有必要信息，如经纬度、海拔、速度等
@@ -34,6 +36,8 @@ class Location {
   
   /// 时间戳（毫秒）
   final int timestamp;
+
+  get latLng => LatLng(latitude, longitude);
 
   /// 构造函数
   const Location({
