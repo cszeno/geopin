@@ -6,11 +6,15 @@ import 'package:go_router/go_router.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:provider/provider.dart';
 
+import '../../../../core/location/domain/entities/location.dart';
 import '../../../../shared/mini_app/presentation/widgets/mini_app_grid_widget.dart';
+import '../../../../shared/sider_tool/map_side_toolbar.dart';
 import '../../domain/entities/mark_point_entity.dart';
+import '../toolbar_controller.dart';
 import '../widgets/animated_location_marker.dart';
 import '../widgets/crosshair_marker.dart';
 import '../widgets/nav_bar.dart';
+import '../widgets/tool_reorder_sheet.dart';
 import 'mark_point_form_page.dart';
 import 'mark_point_detail_sheet.dart';
 
@@ -27,6 +31,10 @@ class _MarkPointCollectPageState extends State<MarkPointCollectPage> {
   // 当前地图中心
   LatLng _currentCenter = const LatLng(31.23, 121.47); // 默认初始位置
 
+  late final ToolbarController _toolbarController;
+
+  Location? _realTimeLocation;
+
   @override
   void initState() {
     super.initState();
@@ -38,6 +46,8 @@ class _MarkPointCollectPageState extends State<MarkPointCollectPage> {
         });
       }
     });
+
+    _toolbarController = ToolbarController();
   }
 
   @override
@@ -70,7 +80,9 @@ class _MarkPointCollectPageState extends State<MarkPointCollectPage> {
                         ),
                       ),
                     );
+                    _realTimeLocation = locationServiceProvider.currentLocation;
                   }
+
 
                   return FlutterMap(
                     options: MapOptions(
@@ -265,6 +277,8 @@ class _MarkPointCollectPageState extends State<MarkPointCollectPage> {
                   ),
                 ),
 
+              _buildSideToolbar(),
+
               Positioned(
                 left: 20,
                 right: 20,
@@ -328,6 +342,126 @@ class _MarkPointCollectPageState extends State<MarkPointCollectPage> {
         },
       ),
     );
+  }
+
+  /// 构建侧边工具栏
+  Widget _buildSideToolbar() {
+    return Positioned(
+      left: 8,
+      top: MediaQuery.of(context).padding.top + 80,
+      child: MapSideToolbar(
+        collapsedItemCount: 0,
+        items: _toolbarController.toolItems,
+        itemHeight: 64,
+        onToolTap: _handleToolTap,
+      ),
+    );
+  }
+
+  /// 处理工具栏点击
+  void _handleToolTap(MapToolItem tool) {
+    final needUpdate = _toolbarController.setActiveTool(tool);
+    if (needUpdate) {
+      setState(() {});
+    }
+
+    // 基于ID处理点击事件
+    switch (tool.id) {
+      case 'order':
+        _showToolOrderSheet();
+        // 显示底部表单后立即取消激活状态
+        _resetToolActiveState();
+        break;
+      case 'move_current_location':
+        _moveCurrentLocation();
+        _resetToolActiveState();
+        break;
+      case 'zoom_in':
+        zoomIn();
+        _resetToolActiveState();
+        break;
+      case 'zoom_out':
+        zoomOut();
+        _resetToolActiveState();
+        break;
+      // case 'show_title':
+      //   _handleToolShowTitle();
+      //   _resetToolActiveState();
+      //   break;
+      // case 'map_switch':
+      //   _handleMapSwitch();
+      //   // 切换图层后立即取消激活状态
+      //   _resetToolActiveState();
+      //   break;
+      // case 'crosshair_mode':
+      //   _toggleCrosshairMode();
+      //   _resetToolActiveState();
+      //   break;
+    }
+  }
+
+  /// 放大地图
+  /// [zoomDelta] 放大的增量，默认为1.0
+  void zoomIn({double zoomDelta = 1.0}) {
+    try {
+      // 获取当前中心点和缩放级别
+      final currentCenter = mapController.camera.center;
+      final currentZoom = mapController.camera.zoom;
+
+      // 计算新的缩放级别，确保不超过最大值18
+      final newZoom = (currentZoom + zoomDelta).clamp(1.0, 25.0);
+
+      // 移动地图（保持中心点不变，只改变缩放级别）
+      mapController.move(currentCenter, newZoom);
+    } catch (e) {
+      // 如果地图未渲染，忽略错误
+    }
+  }
+
+  /// 缩小地图
+  /// [zoomDelta] 缩小的增量，默认为1.0
+  void zoomOut({double zoomDelta = 1.0}) {
+    try {
+      // 获取当前中心点和缩放级别
+      final currentCenter = mapController.camera.center;
+      final currentZoom = mapController.camera.zoom;
+
+      // 计算新的缩放级别，确保不低于最小值5
+      final newZoom = (currentZoom - zoomDelta).clamp(1.0, 25.0);
+
+      // 移动地图（保持中心点不变，只改变缩放级别）
+      mapController.move(currentCenter, newZoom);
+    } catch (e) {
+      // 如果地图未渲染，忽略错误
+    }
+  }
+
+  /// 移动地图到以当前位置为屏幕中心
+  void _moveCurrentLocation() {
+    // 重置地图旋转
+    mapController.rotate(0.0);
+    // 移动到当前位置并重新启用自动跟随
+    if(_realTimeLocation != null) {
+      mapController.move(_realTimeLocation!.latLng, mapController.camera.zoom);
+    }
+  }
+
+  /// 重置工具的激活状态
+  void _resetToolActiveState() {
+    final needUpdate = _toolbarController.resetToolActiveState();
+    if (needUpdate) {
+      setState(() {});
+    }
+  }
+
+  /// 显示工具重排序底部菜单
+  void _showToolOrderSheet() {
+    showToolOrderSheet(_toolbarController.toolItems, (
+        reorderedTools,
+        ) {
+      _toolbarController.updateToolItems(reorderedTools);
+      setState(() {});
+    });
   }
 
   void _handleNavSelected(int index, MarkPointProvider markPointProvider) {
@@ -457,6 +591,26 @@ class _MarkPointCollectPageState extends State<MarkPointCollectPage> {
           style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w500),
         ),
       ],
+    );
+  }
+
+  void showToolOrderSheet(
+      List<MapToolItem> toolItems,
+      Function(List<MapToolItem>) onSave,
+      ) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.white,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (context) {
+        return ToolReorderSheet(
+          toolItems: toolItems,
+          onSave: onSave,
+        );
+      },
     );
   }
 }
