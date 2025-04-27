@@ -40,11 +40,11 @@ class ToolbarController {
         isActive: _activeToolIndex == 0,
       ),
       MapToolItem(
-        icon: Icons.autorenew,
-        label: '采点方式',
-        tooltip: '选择点位采集模式',
+        icon: Icons.map,
+        label: '切换地图',
+        tooltip: '切换不同的地图源',
         isActive: _activeToolIndex == 1,
-        id: 'collection_method',
+        id: 'map_switch',
       ),
       MapToolItem(
         icon: Icons.navigation,
@@ -73,13 +73,6 @@ class ToolbarController {
         tooltip: '是否显示标题',
         isActive: _activeToolIndex == 5,
         id: 'show_title',
-      ),
-      MapToolItem(
-        icon: Icons.map,
-        label: '地图',
-        tooltip: '切换地图',
-        isActive: _activeToolIndex == 6,
-        id: 'map_switch',
       ),
       MapToolItem(
         icon: Icons.gps_fixed,

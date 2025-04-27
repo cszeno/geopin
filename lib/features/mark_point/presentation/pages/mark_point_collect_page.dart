@@ -7,12 +7,14 @@ import 'package:latlong2/latlong.dart';
 import 'package:provider/provider.dart';
 
 import '../../../../core/location/domain/entities/location.dart';
+import '../../../../core/utils/sp_util.dart';
 import '../../../../shared/mini_app/presentation/widgets/mini_app_grid_widget.dart';
 import '../../../../shared/sider_tool/map_side_toolbar.dart';
 import '../../domain/entities/mark_point_entity.dart';
 import '../toolbar_controller.dart';
 import '../widgets/animated_location_marker.dart';
 import '../widgets/crosshair_marker.dart';
+import '../widgets/map_source_manager.dart';
 import '../widgets/nav_bar.dart';
 import '../widgets/tool_reorder_sheet.dart';
 import 'mark_point_form_page.dart';
@@ -32,6 +34,8 @@ class _MarkPointCollectPageState extends State<MarkPointCollectPage> {
   LatLng _currentCenter = const LatLng(31.23, 121.47); // 默认初始位置
 
   late final ToolbarController _toolbarController;
+  // 添加地图源管理器
+  late final MapSourceManager _mapSourceManager;
 
   Location? _realTimeLocation; // 默认初始位置
 
@@ -48,8 +52,20 @@ class _MarkPointCollectPageState extends State<MarkPointCollectPage> {
     });
 
     _toolbarController = ToolbarController();
-  }
+    
+    // 初始化地图源管理器
+    _mapSourceManager = MapSourceManager();
+    _initMapSource();
+    
 
+  }
+  
+  // 初始化地图源
+  Future<void> _initMapSource() async {
+    await _mapSourceManager.initialize();
+    setState(() {}); // 初始化完成后刷新UI
+  }
+  
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -88,10 +104,8 @@ class _MarkPointCollectPageState extends State<MarkPointCollectPage> {
                     mapController: mapController,
                     children: [
                       TileLayer(
-                        urlTemplate:
-                            'http://wprd04.is.autonavi.com/appmaptile?lang=zh_cn&size=1&style=7&x={x}&y={y}&z={z}',
-                        userAgentPackageName:
-                            'dev.fleaflet.flutter_map.example',
+                        urlTemplate: _mapSourceManager.currentMapSource.urlTemplate,
+                        userAgentPackageName: 'app.geopin',
                       ),
 
                       MarkerLayer(markers: markers),
@@ -387,19 +401,10 @@ class _MarkPointCollectPageState extends State<MarkPointCollectPage> {
         zoomOut();
         _resetToolActiveState();
         break;
-      // case 'show_title':
-      //   _handleToolShowTitle();
-      //   _resetToolActiveState();
-      //   break;
-      // case 'map_switch':
-      //   _handleMapSwitch();
-      //   // 切换图层后立即取消激活状态
-      //   _resetToolActiveState();
-      //   break;
-      // case 'crosshair_mode':
-      //   _toggleCrosshairMode();
-      //   _resetToolActiveState();
-      //   break;
+      case 'map_switch':
+        _handleMapSwitch();
+        _resetToolActiveState();
+        break;
     }
   }
 
@@ -609,6 +614,15 @@ class _MarkPointCollectPageState extends State<MarkPointCollectPage> {
       builder: (context) {
         return ToolReorderSheet(toolItems: toolItems, onSave: onSave);
       },
+    );
+  }
+
+  // 处理地图切换
+  void _handleMapSwitch() {
+    showMapSourceSheet(
+      context, 
+      _mapSourceManager,
+      () => setState(() {}), // 地图源变更时刷新UI
     );
   }
 }
