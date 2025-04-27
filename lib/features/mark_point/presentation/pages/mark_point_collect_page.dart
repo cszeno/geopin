@@ -33,7 +33,7 @@ class _MarkPointCollectPageState extends State<MarkPointCollectPage> {
 
   late final ToolbarController _toolbarController;
 
-  Location? _realTimeLocation;
+  Location? _realTimeLocation; // 默认初始位置
 
   @override
   void initState() {
@@ -68,21 +68,10 @@ class _MarkPointCollectPageState extends State<MarkPointCollectPage> {
                   final currentLocation =
                       locationServiceProvider.currentLocation;
 
+                  /// 实时位置不为空，则赋值给实时位置
                   if (currentLocation != null) {
-                    markers.add(
-                      Marker(
-                        point: currentLocation.latLng,
-                        width: 30,
-                        height: 30,
-                        child: const AnimatedLocationMarker(
-                          color: Colors.red,
-                          size: 5,
-                        ),
-                      ),
-                    );
                     _realTimeLocation = locationServiceProvider.currentLocation;
                   }
-
 
                   return FlutterMap(
                     options: MapOptions(
@@ -106,6 +95,20 @@ class _MarkPointCollectPageState extends State<MarkPointCollectPage> {
                       ),
 
                       MarkerLayer(markers: markers),
+
+                      MarkerLayer(
+                        markers: [
+                          Marker(
+                            point: _realTimeLocation?.latLng ?? _currentCenter,
+                            width: 30,
+                            height: 30,
+                            child: const AnimatedLocationMarker(
+                              color: Colors.red,
+                              size: 5,
+                            ),
+                          ),
+                        ],
+                      ),
 
                       Center(
                         child: CrossCursorMarker(
@@ -441,7 +444,7 @@ class _MarkPointCollectPageState extends State<MarkPointCollectPage> {
     // 重置地图旋转
     mapController.rotate(0.0);
     // 移动到当前位置并重新启用自动跟随
-    if(_realTimeLocation != null) {
+    if (_realTimeLocation != null) {
       mapController.move(_realTimeLocation!.latLng, mapController.camera.zoom);
     }
   }
@@ -456,9 +459,7 @@ class _MarkPointCollectPageState extends State<MarkPointCollectPage> {
 
   /// 显示工具重排序底部菜单
   void _showToolOrderSheet() {
-    showToolOrderSheet(_toolbarController.toolItems, (
-        reorderedTools,
-        ) {
+    showToolOrderSheet(_toolbarController.toolItems, (reorderedTools) {
       _toolbarController.updateToolItems(reorderedTools);
       setState(() {});
     });
@@ -595,9 +596,9 @@ class _MarkPointCollectPageState extends State<MarkPointCollectPage> {
   }
 
   void showToolOrderSheet(
-      List<MapToolItem> toolItems,
-      Function(List<MapToolItem>) onSave,
-      ) {
+    List<MapToolItem> toolItems,
+    Function(List<MapToolItem>) onSave,
+  ) {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -606,10 +607,7 @@ class _MarkPointCollectPageState extends State<MarkPointCollectPage> {
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
       builder: (context) {
-        return ToolReorderSheet(
-          toolItems: toolItems,
-          onSave: onSave,
-        );
+        return ToolReorderSheet(toolItems: toolItems, onSave: onSave);
       },
     );
   }
