@@ -98,6 +98,16 @@ class DatabaseService {
         updated_at INTEGER NOT NULL
       )
     ''');
+    
+    // 插入默认项目
+    final now = DateTime.now().millisecondsSinceEpoch;
+    await db.insert(projectsTable, {
+      'id': -1,
+      'uuid': 'default-project',
+      'name': '默认项目',
+      'created_at': now,
+      'updated_at': now,
+    });
   }
   
   /// 处理数据库升级

@@ -689,7 +689,7 @@ class _MarkPointCollectPageState extends State<MarkPointCollectPage> {
                             trailing: Row(
                               mainAxisSize: MainAxisSize.min,
                               children: [
-                                if (provider.openedprojectUUID == project.id)
+                                if (provider.openedprojectUUID == project.uuid)
                                   Container(
                                     padding: const EdgeInsets.symmetric(
                                       horizontal: 8,
@@ -700,7 +700,7 @@ class _MarkPointCollectPageState extends State<MarkPointCollectPage> {
                                       borderRadius: BorderRadius.circular(12),
                                     ),
                                     child: Text(
-                                      '当前项目',
+                                      '当前选择的项目',
                                       style: TextStyle(
                                         fontSize: 12,
                                         color: Theme.of(context).primaryColor,
@@ -824,7 +824,7 @@ class _MarkPointCollectPageState extends State<MarkPointCollectPage> {
           ),
           ElevatedButton(
             onPressed: () {
-              provider.projectUUID = project.id;
+              provider.projectUUID = project.uuid;
               Navigator.pop(context); // 关闭确认对话框
               Navigator.pop(context); // 关闭项目列表弹窗
             },

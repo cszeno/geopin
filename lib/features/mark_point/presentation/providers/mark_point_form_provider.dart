@@ -245,7 +245,7 @@ class MarkPointFormProvider extends ChangeNotifier {
 
   /// 创建标记点
   MarkPointEntity? createMarkPoint({
-    required int projectUUID,
+    required String projectUUID,
     required double latitude,
     required double longitude,
     double? altitude,

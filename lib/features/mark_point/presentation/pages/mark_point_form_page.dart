@@ -15,7 +15,7 @@ import '../providers/mark_point_form_provider.dart';
 /// 使用Clean Architecture重构后的标记点表单界面
 class MarkPointFormPage extends StatelessWidget {
   /// 当前项目id
-  final int projectUUID;
+  final String projectUUID;
 
   /// 当前位置的纬度
   final double latitude;
@@ -62,7 +62,7 @@ class MarkPointFormPage extends StatelessWidget {
 /// 标记点表单视图
 class _MarkPointFormView extends StatelessWidget {
   final MarkPointFormProvider provider;
-  final int projectUUID;
+  final String projectUUID;
   final double latitude;
   final double longitude;
   final double altitude;

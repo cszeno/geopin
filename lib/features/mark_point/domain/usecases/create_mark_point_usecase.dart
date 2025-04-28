@@ -21,7 +21,7 @@ class CreateMarkPointUseCase {
     required String name,
     required double latitude,
     required double longitude,
-    required int projectUUID,
+    required String projectUUID,
     double? elevation,
     required Color color,
     Map<String, String>? attributes,

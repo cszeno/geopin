@@ -25,7 +25,7 @@ class MarkPointModel {
   final double longitude;
   
   /// 关联的项目ID
-  final int? projectUUID;
+  final String? projectUUID;
   
   /// 海拔高度（可选）
   final double? elevation;

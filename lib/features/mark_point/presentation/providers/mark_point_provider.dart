@@ -33,7 +33,7 @@ class MarkPointProvider with ChangeNotifier {
   bool _isLoading = false;
 
   /// 当前选择的项目id, -1 为默认项目id
-  int _projectUUID = -1;
+  String _projectUUID = "default-project";
   
   /// 错误信息
   String? _errorMessage;
@@ -47,7 +47,7 @@ class MarkPointProvider with ChangeNotifier {
   }
 
   /// 获取当前打开的项目
-  int get openedprojectUUID => _projectUUID;
+  String get openedprojectUUID => _projectUUID;
 
   /// 获取项目列表
   List<MarkPointProjectEntity> get projects => _projects;
@@ -261,7 +261,7 @@ class MarkPointProvider with ChangeNotifier {
   }
 
   /// 设置当前打开的项目
-  set projectUUID(int value) {
+  set projectUUID(String value) {
     _projectUUID = value;
     loadAllMarkPoints();
   }

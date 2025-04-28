@@ -42,9 +42,9 @@ class MarkPointRepositoryImpl implements MarkPointRepository {
   }
 
   @override
-  Future<List<MarkPointEntity>> getAllMarkPointsById(int projectUUID) async {
+  Future<List<MarkPointEntity>> getAllMarkPointsById(String projectUUID) async {
     // 获取所有标记点模型
-    final models = await localDataSource.getAllMarkPointsByprojectUUID(projectUUID);
+    final models = await localDataSource.getAllMarkPointsByProjectUUID(projectUUID);
 
     // 转换为实体列表并返回
     return models.map((model) => model.toEntity()).toList();

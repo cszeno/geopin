@@ -10,7 +10,7 @@ abstract class MarkPointRepository {
   Future<List<MarkPointEntity>> getAllMarkPoints();
 
   /// 通过项目Id返回所有已保存的标记点列表
-  Future<List<MarkPointEntity>> getAllMarkPointsById(int projectUUID);
+  Future<List<MarkPointEntity>> getAllMarkPointsById(String projectUUID);
   
   /// 根据ID获取特定标记点
   /// 

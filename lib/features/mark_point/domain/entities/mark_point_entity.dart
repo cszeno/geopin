@@ -25,7 +25,7 @@ class MarkPointEntity {
   final double longitude;
   
   /// 关联的项目ID
-  late final int? projectUUID;
+  late final String? projectUUID;
   
   /// 海拔高度（可选）
   final double? elevation;
@@ -94,7 +94,7 @@ class MarkPointEntity {
     String? newName,
     double? newLatitude,
     double? newLongitude,
-    int? newprojectUUID,
+    String? newprojectUUID,
     double? newElevation,
     Color? newIconColor,
     List<String>? newImgPath,
