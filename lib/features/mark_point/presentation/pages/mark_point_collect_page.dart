@@ -405,6 +405,10 @@ class _MarkPointCollectPageState extends State<MarkPointCollectPage> {
         _handleMapSwitch();
         _resetToolActiveState();
         break;
+      case 'project_manager':
+        _handleProjectManager();
+        _resetToolActiveState();
+        break;
     }
   }
 
@@ -485,11 +489,11 @@ class _MarkPointCollectPageState extends State<MarkPointCollectPage> {
           ),
           builder:
               (BuildContext bottomSheetContext) => MarkPointFormPage(
+                projectId: markPointProvider.openedProjectId,
                 latitude: _currentCenter.latitude,
                 longitude: _currentCenter.longitude,
                 onSubmit: (markPoint) {
                   // 添加新的标记点 - Provider会自动通知UI更新
-                  markPoint.projectId = markPointProvider.projectId;
                   markPointProvider.addPoint(markPoint);
                 },
               ),
@@ -625,5 +629,10 @@ class _MarkPointCollectPageState extends State<MarkPointCollectPage> {
       _mapSourceManager,
       () => setState(() {}), // 地图源变更时刷新UI
     );
+  }
+
+  // 项目管理
+  void _handleProjectManager() {
+    Provider.of<MarkPointProvider>(context, listen: false).projectId = 1;
   }
 }

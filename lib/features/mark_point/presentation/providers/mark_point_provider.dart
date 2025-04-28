@@ -24,7 +24,7 @@ class MarkPointProvider with ChangeNotifier {
   bool _isLoading = false;
 
   /// 当前选择的项目id, -1 为默认项目id
-  int projectId = -1;
+  int _projectId = -1;
   
   /// 错误信息
   String? _errorMessage;
@@ -34,6 +34,9 @@ class MarkPointProvider with ChangeNotifier {
     // 初始化时加载所有标记点
     loadAllMarkPoints();
   }
+
+  /// 获取当前打开的项目
+  int get openedProjectId => _projectId;
 
   /// 获取标记点列表
   List<MarkPointEntity> get points => _points;
@@ -52,7 +55,7 @@ class MarkPointProvider with ChangeNotifier {
     _setLoading(true);
     try {
       // 从仓库加载所有标记点
-      _points = await _repository.getAllMarkPoints();
+      _points = await _repository.getAllMarkPointsById(_projectId);
       
       // 更新经纬度列表
       _updateLatLngs();
@@ -215,5 +218,11 @@ class MarkPointProvider with ChangeNotifier {
     _errorMessage = error;
     _isLoading = false;
     notifyListeners();
+  }
+
+  /// 设置当前打开的项目
+  set projectId(int value) {
+    _projectId = value;
+    loadAllMarkPoints();
   }
 }

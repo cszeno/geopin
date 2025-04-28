@@ -40,6 +40,13 @@ class ToolbarController {
         isActive: _activeToolIndex == 0,
       ),
       MapToolItem(
+        icon: Icons.folder,
+        label: '项目管理',
+        tooltip: '项目管理',
+        id: 'project_manager',
+        isActive: _activeToolIndex == 0,
+      ),
+      MapToolItem(
         icon: Icons.map,
         label: '切换地图',
         tooltip: '切换不同的地图源',
