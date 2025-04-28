@@ -109,62 +109,6 @@ class DatabaseService {
       await _onCreate(db, newVersion);
     }
 
-    // if (oldVersion < 2) {
-    //   // 版本1升级到版本2的操作
-    //
-    //   // 检查项目表是否存在
-    //   final projectTables = await db.rawQuery(
-    //     "SELECT name FROM sqlite_master WHERE type='table' AND name='$projectsTable'"
-    //   );
-    //
-    //   if (projectTables.isEmpty) {
-    //     // 创建项目表
-    //     await db.execute('''
-    //       CREATE TABLE IF NOT EXISTS $projectsTable (
-    //         id INTEGER PRIMARY KEY AUTOINCREMENT,
-    //         name TEXT NOT NULL,
-    //         created_at INTEGER NOT NULL,
-    //         updated_at INTEGER NOT NULL
-    //       )
-    //     ''');
-    //   }
-    //
-    //   // 检查标记点表是否存在
-    //   final markPointTables = await db.rawQuery(
-    //     "SELECT name FROM sqlite_master WHERE type='table' AND name='$markPointsTable'"
-    //   );
-    //
-    //   if (markPointTables.isEmpty) {
-    //     // 创建标记点表
-    //     await db.execute('''
-    //       CREATE TABLE IF NOT EXISTS $markPointsTable (
-    //         id INTEGER PRIMARY KEY AUTOINCREMENT,
-    //         name TEXT NOT NULL,
-    //         latitude REAL NOT NULL,
-    //         longitude REAL NOT NULL,
-    //         project_uuid INTEGER,
-    //         elevation REAL,
-    //         icon_id TEXT,
-    //         icon_color INTEGER,
-    //         img_path TEXT,
-    //         attributes TEXT,
-    //         created_at INTEGER NOT NULL,
-    //         updated_at INTEGER NOT NULL
-    //       )
-    //     ''');
-    //   } else {
-    //     // 标记点表存在，但需要添加project_uuid字段
-    //     try {
-    //       // 检查project_uuid字段是否存在
-    //       await db.rawQuery('SELECT project_uuid FROM $markPointsTable LIMIT 1');
-    //     } catch (e) {
-    //       // 字段不存在，添加project_uuid字段
-    //       _logger.info('添加project_uuid字段到$markPointsTable表');
-    //       await db.execute('ALTER TABLE $markPointsTable ADD COLUMN project_uuid INTEGER;');
-    //     }
-    //   }
-    // }
-
     // 这里可以添加未来版本的升级逻辑
   }
   

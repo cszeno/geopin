@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:geopin/features/mark_point/domain/entities/mark_point_project_entity.dart';
 import 'package:get_it/get_it.dart';
 import 'package:geopin/core/utils/app_logger.dart';
 import 'package:geopin/features/mark_point/domain/entities/mark_point_entity.dart';
@@ -6,13 +7,21 @@ import 'package:geopin/features/mark_point/domain/repositories/mark_point_reposi
 import 'package:latlong2/latlong.dart';
 import 'package:uuid/uuid.dart';
 
+import '../../domain/repositories/mark_point_project_repository.dart';
+
 /// 标记点提供者
 /// 
 /// 管理标记点数据，提供UI层访问和操作标记点的能力
 class MarkPointProvider with ChangeNotifier {
   
   /// 标记点仓库
-  final MarkPointRepository _repository = GetIt.I<MarkPointRepository>();
+  final MarkPointRepository _repositoryMarkPoint = GetIt.I<MarkPointRepository>();
+
+  /// 标记点项目
+  final MarkPointProjectRepository _repositoryMarkPointProject = GetIt.I<MarkPointProjectRepository>();
+
+  /// 标记点列表
+  List<MarkPointProjectEntity> _projects = [];
   
   /// 标记点列表
   List<MarkPointEntity> _points = [];
@@ -31,12 +40,17 @@ class MarkPointProvider with ChangeNotifier {
 
   /// 构造函数
   MarkPointProvider() {
+    // 加载项目（TODO：定义当前打开的项目）
+    loadAllMarkPointProjects();
     // 初始化时加载所有标记点
     loadAllMarkPoints();
   }
 
   /// 获取当前打开的项目
   int get openedprojectUUID => _projectUUID;
+
+  /// 获取项目列表
+  List<MarkPointProjectEntity> get projects => _projects;
 
   /// 获取标记点列表
   List<MarkPointEntity> get points => _points;
@@ -55,7 +69,7 @@ class MarkPointProvider with ChangeNotifier {
     _setLoading(true);
     try {
       // 从仓库加载所有标记点
-      _points = await _repository.getAllMarkPointsById(_projectUUID);
+      _points = await _repositoryMarkPoint.getAllMarkPointsById(_projectUUID);
       
       // 更新经纬度列表
       _updateLatLngs();
@@ -65,6 +79,32 @@ class MarkPointProvider with ChangeNotifier {
       _setError('加载标记点失败: $e');
     }
   }
+
+  Future<void> loadAllMarkPointProjects() async {
+    _setLoading(true);
+    try {
+      // 从仓库加载所有标记点
+      _projects = await _repositoryMarkPointProject.getAllProjects();
+
+      _setLoading(false);
+    } catch (e) {
+      _setError('加载项目失败: $e');
+    }
+  }
+
+  /// 添加项目测试TODO完善
+  ///
+  Future<void> addProject(String name) async {
+    try {
+      await _repositoryMarkPointProject.addProject(MarkPointProjectEntity(id: -1, uuid: Uuid().v4(), name: name));
+      // 添加项目后立即刷新项目列表
+      await loadAllMarkPointProjects();
+      notifyListeners();
+    } catch (e) {
+      _setError('添加标记点失败: $e');
+    }
+  }
+
   
   /// 添加标记点
   /// 
@@ -91,7 +131,7 @@ class MarkPointProvider with ChangeNotifier {
     _setLoading(true);
     try {
       // 调用仓库更新标记点
-      final success = await _repository.updateMarkPoint(markPoint);
+      final success = await _repositoryMarkPoint.updateMarkPoint(markPoint);
       
       if (success) {
         // 更新本地缓存
@@ -119,7 +159,7 @@ class MarkPointProvider with ChangeNotifier {
     _setLoading(true);
     try {
       // 调用仓库删除标记点
-      final success = await _repository.deleteMarkPoint(id);
+      final success = await _repositoryMarkPoint.deleteMarkPoint(id);
       
       if (success) {
         // 从本地缓存移除
@@ -144,7 +184,7 @@ class MarkPointProvider with ChangeNotifier {
     _setLoading(true);
     try {
       // 调用仓库搜索标记点
-      final results = await _repository.searchMarkPoints(keyword);
+      final results = await _repositoryMarkPoint.searchMarkPoints(keyword);
       _setLoading(false);
       return results;
     } catch (e) {
@@ -165,10 +205,10 @@ class MarkPointProvider with ChangeNotifier {
     );
     
     // 调用仓库添加标记点
-    final id = await _repository.addMarkPoint(newPoint);
+    final id = await _repositoryMarkPoint.addMarkPoint(newPoint);
     
     // 获取包含正确ID的新标记点
-    final addedPoint = await _repository.getMarkPointById(id);
+    final addedPoint = await _repositoryMarkPoint.getMarkPointById(id);
     
     // 更新本地缓存
     _points.add(addedPoint);
@@ -183,10 +223,10 @@ class MarkPointProvider with ChangeNotifier {
   /// 内部方法：直接添加MarkPointEntity
   Future<void> _addPointEntity(MarkPointEntity markPoint) async {
     // 调用仓库添加标记点
-    final id = await _repository.addMarkPoint(markPoint);
+    final id = await _repositoryMarkPoint.addMarkPoint(markPoint);
     
     // 获取包含正确ID的新标记点
-    final addedPoint = await _repository.getMarkPointById(id);
+    final addedPoint = await _repositoryMarkPoint.getMarkPointById(id);
     
     // 更新本地缓存
     _points.add(addedPoint);

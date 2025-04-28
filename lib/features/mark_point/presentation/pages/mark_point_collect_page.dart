@@ -11,6 +11,7 @@ import '../../../../core/utils/sp_util.dart';
 import '../../../../shared/mini_app/presentation/widgets/mini_app_grid_widget.dart';
 import '../../../../shared/sider_tool/map_side_toolbar.dart';
 import '../../domain/entities/mark_point_entity.dart';
+import '../../domain/entities/mark_point_project_entity.dart';
 import '../toolbar_controller.dart';
 import '../widgets/animated_location_marker.dart';
 import '../widgets/crosshair_marker.dart';
@@ -633,6 +634,204 @@ class _MarkPointCollectPageState extends State<MarkPointCollectPage> {
 
   // 项目管理
   void _handleProjectManager() {
-    Provider.of<MarkPointProvider>(context, listen: false).projectUUID = 1;
+    MarkPointProvider markPointProvider = Provider.of<MarkPointProvider>(context, listen: false);
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+      ),
+      builder: (BuildContext bottomSheetContext) {
+        return Container(
+          height: MediaQuery.of(context).size.height * 0.8,
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            children: [
+              // 标题栏
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  const Text(
+                    '项目管理',
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  IconButton(
+                    icon: const Icon(Icons.add),
+                    onPressed: () {
+                      _showAddProjectDialog(context, markPointProvider);
+                    },
+                  ),
+                ],
+              ),
+              const SizedBox(height: 16),
+              
+              // 项目列表
+              Expanded(
+                child: Consumer<MarkPointProvider>(
+                  builder: (context, provider, child) {
+                    if (provider.projects.isEmpty) {
+                      return const Center(
+                        child: Text('暂无项目，请点击右上角添加'),
+                      );
+                    }
+                    
+                    return ListView.builder(
+                      itemCount: provider.projects.length,
+                      itemBuilder: (context, index) {
+                        final project = provider.projects[index];
+                        return Card(
+                          margin: const EdgeInsets.only(bottom: 8),
+                          child: ListTile(
+                            title: Text(project.name),
+                            trailing: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                if (provider.openedprojectUUID == project.id)
+                                  Container(
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 8,
+                                      vertical: 4,
+                                    ),
+                                    decoration: BoxDecoration(
+                                      color: Theme.of(context).primaryColor.withOpacity(0.1),
+                                      borderRadius: BorderRadius.circular(12),
+                                    ),
+                                    child: Text(
+                                      '当前项目',
+                                      style: TextStyle(
+                                        fontSize: 12,
+                                        color: Theme.of(context).primaryColor,
+                                      ),
+                                    ),
+                                  ),
+                                IconButton(
+                                  icon: const Icon(Icons.delete_outline),
+                                  onPressed: () {
+                                    _showDeleteConfirmDialog(
+                                      context,
+                                      project,
+                                      markPointProvider,
+                                    );
+                                  },
+                                ),
+                              ],
+                            ),
+                            onTap: () {
+                              _showSelectProjectConfirmDialog(
+                                context,
+                                project,
+                                markPointProvider,
+                              );
+                            },
+                          ),
+                        );
+                      },
+                    );
+                  },
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  // 显示添加项目对话框
+  void _showAddProjectDialog(BuildContext context, MarkPointProvider provider) {
+    final TextEditingController controller = TextEditingController();
+    
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('新建项目'),
+        content: TextField(
+          controller: controller,
+          decoration: const InputDecoration(
+            hintText: '请输入项目名称',
+            border: OutlineInputBorder(),
+          ),
+          autofocus: true,
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('取消'),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              if (controller.text.isNotEmpty) {
+                provider.addProject(controller.text);
+                Navigator.pop(context);
+              }
+            },
+            child: const Text('创建'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // 显示删除确认对话框
+  void _showDeleteConfirmDialog(
+    BuildContext context,
+    MarkPointProjectEntity project,
+    MarkPointProvider provider,
+  ) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('确认删除'),
+        content: Text('确定要删除项目 "${project.name}" 吗？'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('取消'),
+          ),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.red,
+            ),
+            onPressed: () {
+              // provider.deleteProject(project.id);
+              Navigator.pop(context);
+            },
+            child: const Text('删除'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // 显示选择项目确认对话框
+  void _showSelectProjectConfirmDialog(
+    BuildContext context,
+    MarkPointProjectEntity project,
+    MarkPointProvider provider,
+  ) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('确认选择'),
+        content: Text('确定要切换到项目 "${project.name}" 吗？'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('取消'),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              provider.projectUUID = project.id;
+              Navigator.pop(context); // 关闭确认对话框
+              Navigator.pop(context); // 关闭项目列表弹窗
+            },
+            child: const Text('确定'),
+          ),
+        ],
+      ),
+    );
   }
 }
