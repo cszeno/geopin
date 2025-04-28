@@ -14,7 +14,7 @@ abstract class MarkPointLocalDataSource {
   Future<List<MarkPointModel>> getAllMarkPoints();
 
   /// 获取所有标记点
-  Future<List<MarkPointModel>> getAllMarkPointsByProjectId(int projectId);
+  Future<List<MarkPointModel>> getAllMarkPointsByprojectUUID(int projectUUID);
 
   /// 根据ID获取标记点
   Future<MarkPointModel> getMarkPointById(int id);
@@ -94,7 +94,7 @@ class MarkPointLocalDataSourceImpl implements MarkPointLocalDataSource {
       'name': model.name,
       'latitude': model.latitude,
       'longitude': model.longitude,
-      'project_id': model.projectId,
+      'project_uuid': model.projectUUID,
       'elevation': model.elevation,
       'icon_color': model.color?.value,
       'img_path': _encodeImgPaths(model.imgPath),
@@ -113,7 +113,7 @@ class MarkPointLocalDataSourceImpl implements MarkPointLocalDataSource {
       name: map['name'],
       latitude: map['latitude'],
       longitude: map['longitude'],
-      projectId: map['project_id'],
+      projectUUID: map['project_uuid'],
       elevation: map['elevation'],
       color: map['icon_color'] != null ? Color(map['icon_color']) : null,
       imgPath: _decodeImgPaths(map['img_path']),
@@ -144,12 +144,12 @@ class MarkPointLocalDataSourceImpl implements MarkPointLocalDataSource {
   }
 
   @override
-  Future<List<MarkPointModel>> getAllMarkPointsByProjectId(int projectId) async {
+  Future<List<MarkPointModel>> getAllMarkPointsByprojectUUID(int projectUUID) async {
     // 查询指定ID的记录
     final List<Map<String, dynamic>> maps = await database.query(
       tableName,
-      where: 'project_id = ?',
-      whereArgs: [projectId],
+      where: 'project_uuid = ?',
+      whereArgs: [projectUUID],
     );
 
     // 转换为Model列表

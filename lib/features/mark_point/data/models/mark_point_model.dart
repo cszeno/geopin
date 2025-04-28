@@ -25,7 +25,7 @@ class MarkPointModel {
   final double longitude;
   
   /// 关联的项目ID
-  final int? projectId;
+  final int? projectUUID;
   
   /// 海拔高度（可选）
   final double? elevation;
@@ -53,7 +53,7 @@ class MarkPointModel {
     required this.name,
     required this.latitude,
     required this.longitude,
-    this.projectId,
+    this.projectUUID,
     this.elevation,
     this.color,
     this.imgPath,
@@ -74,7 +74,7 @@ class MarkPointModel {
       name: entity.name,
       latitude: entity.latitude,
       longitude: entity.longitude,
-      projectId: entity.projectId,
+      projectUUID: entity.projectUUID,
       elevation: entity.elevation,
       color: entity.color,
       imgPath: entity.imgPath,
@@ -94,7 +94,7 @@ class MarkPointModel {
       name: name,
       latitude: latitude,
       longitude: longitude,
-      projectId: projectId,
+      projectUUID: projectUUID,
       elevation: elevation,
       color: color,
       imgPath: imgPath,
@@ -115,7 +115,7 @@ class MarkPointModel {
       name: json['name'],
       latitude: json['latitude'],
       longitude: json['longitude'],
-      projectId: json['projectId'],
+      projectUUID: json['projectUUID'],
       elevation: json['elevation'],
       color: json['color'] != null
           ? Color(json['color'])
@@ -145,7 +145,7 @@ class MarkPointModel {
       'name': name,
       'latitude': latitude,
       'longitude': longitude,
-      'projectId': projectId,
+      'projectUUID': projectUUID,
       'elevation': elevation,
       'color': color?.value,
       'imgPath': imgPath,

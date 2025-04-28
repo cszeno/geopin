@@ -245,7 +245,7 @@ class MarkPointFormProvider extends ChangeNotifier {
 
   /// 创建标记点
   MarkPointEntity? createMarkPoint({
-    required int projectId,
+    required int projectUUID,
     required double latitude,
     required double longitude,
     double? altitude,
@@ -273,7 +273,7 @@ class MarkPointFormProvider extends ChangeNotifier {
         name: nameController.text,
         latitude: latitude,
         longitude: longitude,
-        projectId: projectId,
+        projectUUID: projectUUID,
         elevation: elevationController.text.isNotEmpty 
             ? double.tryParse(elevationController.text) 
             : altitude,

@@ -15,7 +15,7 @@ import '../providers/mark_point_form_provider.dart';
 /// 使用Clean Architecture重构后的标记点表单界面
 class MarkPointFormPage extends StatelessWidget {
   /// 当前项目id
-  final int projectId;
+  final int projectUUID;
 
   /// 当前位置的纬度
   final double latitude;
@@ -32,7 +32,7 @@ class MarkPointFormPage extends StatelessWidget {
   /// 构造函数
   const MarkPointFormPage({
     super.key,
-    required this.projectId,
+    required this.projectUUID,
     required this.latitude, 
     required this.longitude, 
     required this.onSubmit,
@@ -47,7 +47,7 @@ class MarkPointFormPage extends StatelessWidget {
         builder: (context, provider, _) {
           return _MarkPointFormView(
             provider: provider,
-            projectId: projectId,
+            projectUUID: projectUUID,
             latitude: latitude,
             longitude: longitude,
             altitude: altitude,
@@ -62,7 +62,7 @@ class MarkPointFormPage extends StatelessWidget {
 /// 标记点表单视图
 class _MarkPointFormView extends StatelessWidget {
   final MarkPointFormProvider provider;
-  final int projectId;
+  final int projectUUID;
   final double latitude;
   final double longitude;
   final double altitude;
@@ -70,7 +70,7 @@ class _MarkPointFormView extends StatelessWidget {
 
   const _MarkPointFormView({
     super.key,
-    required this.projectId,
+    required this.projectUUID,
     required this.provider,
     required this.latitude,
     required this.longitude,
@@ -448,7 +448,7 @@ class _MarkPointFormView extends StatelessWidget {
   /// 提交表单
   void _submitForm(BuildContext context) {
     final markPoint = provider.createMarkPoint(
-      projectId: projectId,
+      projectUUID: projectUUID,
       latitude: latitude,
       longitude: longitude,
       altitude: altitude,

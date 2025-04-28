@@ -74,6 +74,7 @@ class DatabaseService {
     await db.execute('''
       CREATE TABLE IF NOT EXISTS $projectsTable (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
+        uuid TEXT NOT NULL,
         name TEXT NOT NULL,
         created_at INTEGER NOT NULL,
         updated_at INTEGER NOT NULL
@@ -88,7 +89,7 @@ class DatabaseService {
         name TEXT NOT NULL,
         latitude REAL NOT NULL,
         longitude REAL NOT NULL,
-        project_id INTEGER,
+        project_uuid INTEGER,
         elevation REAL,
         icon_color INTEGER,
         img_path TEXT,
@@ -141,7 +142,7 @@ class DatabaseService {
     //         name TEXT NOT NULL,
     //         latitude REAL NOT NULL,
     //         longitude REAL NOT NULL,
-    //         project_id INTEGER,
+    //         project_uuid INTEGER,
     //         elevation REAL,
     //         icon_id TEXT,
     //         icon_color INTEGER,
@@ -152,14 +153,14 @@ class DatabaseService {
     //       )
     //     ''');
     //   } else {
-    //     // 标记点表存在，但需要添加project_id字段
+    //     // 标记点表存在，但需要添加project_uuid字段
     //     try {
-    //       // 检查project_id字段是否存在
-    //       await db.rawQuery('SELECT project_id FROM $markPointsTable LIMIT 1');
+    //       // 检查project_uuid字段是否存在
+    //       await db.rawQuery('SELECT project_uuid FROM $markPointsTable LIMIT 1');
     //     } catch (e) {
-    //       // 字段不存在，添加project_id字段
-    //       _logger.info('添加project_id字段到$markPointsTable表');
-    //       await db.execute('ALTER TABLE $markPointsTable ADD COLUMN project_id INTEGER;');
+    //       // 字段不存在，添加project_uuid字段
+    //       _logger.info('添加project_uuid字段到$markPointsTable表');
+    //       await db.execute('ALTER TABLE $markPointsTable ADD COLUMN project_uuid INTEGER;');
     //     }
     //   }
     // }

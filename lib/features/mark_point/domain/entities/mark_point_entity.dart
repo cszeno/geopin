@@ -25,7 +25,7 @@ class MarkPointEntity {
   final double longitude;
   
   /// 关联的项目ID
-  late final int? projectId;
+  late final int? projectUUID;
   
   /// 海拔高度（可选）
   final double? elevation;
@@ -52,7 +52,7 @@ class MarkPointEntity {
   /// [name]: 标记点名称  
   /// [latitude]: 纬度坐标
   /// [longitude]: 经度坐标
-  /// [projectId]: 关联的项目ID（可选）
+  /// [projectUUID]: 关联的项目ID（可选）
   /// [elevation]: 海拔高度（可选）
   /// [iconId]: 图标标识符（可选）
   /// [iconColor]: 图标颜色（可选）
@@ -66,7 +66,7 @@ class MarkPointEntity {
     required this.name,
     required this.latitude,
     required this.longitude,
-    this.projectId,
+    this.projectUUID,
     this.elevation,
     this.color,
     this.imgPath,
@@ -83,7 +83,7 @@ class MarkPointEntity {
   /// [newName]: 新的名称，如果为null则保持原值
   /// [newLatitude]: 新的纬度，如果为null则保持原值
   /// [newLongitude]: 新的经度，如果为null则保持原值
-  /// [newProjectId]: 新的项目ID，如果为null则保持原值
+  /// [newprojectUUID]: 新的项目ID，如果为null则保持原值
   /// [newElevation]: 新的海拔，如果为null则保持原值
   /// [newIconId]: 新的图标ID，如果为null则保持原值
   /// [newIconColor]: 新的图标颜色，如果为null则保持原值
@@ -94,7 +94,7 @@ class MarkPointEntity {
     String? newName,
     double? newLatitude,
     double? newLongitude,
-    int? newProjectId,
+    int? newprojectUUID,
     double? newElevation,
     Color? newIconColor,
     List<String>? newImgPath,
@@ -106,7 +106,7 @@ class MarkPointEntity {
       name: newName ?? name,
       latitude: newLatitude ?? latitude,
       longitude: newLongitude ?? longitude,
-      projectId: newProjectId ?? projectId,
+      projectUUID: newprojectUUID ?? projectUUID,
       elevation: newElevation ?? elevation,
       color: newIconColor ?? color,
       imgPath: newImgPath ?? imgPath,
@@ -136,6 +136,6 @@ class MarkPointEntity {
   /// 返回字符串表示
   @override
   String toString() {
-    return 'MarkPointEntity(id: $id, name: $name, lat: $latitude, lng: $longitude, projectId: $projectId)';
+    return 'MarkPointEntity(id: $id, name: $name, lat: $latitude, lng: $longitude, projectUUID: $projectUUID)';
   }
 }

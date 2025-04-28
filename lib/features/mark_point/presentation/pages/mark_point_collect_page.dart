@@ -489,7 +489,7 @@ class _MarkPointCollectPageState extends State<MarkPointCollectPage> {
           ),
           builder:
               (BuildContext bottomSheetContext) => MarkPointFormPage(
-                projectId: markPointProvider.openedProjectId,
+                projectUUID: markPointProvider.openedprojectUUID,
                 latitude: _currentCenter.latitude,
                 longitude: _currentCenter.longitude,
                 onSubmit: (markPoint) {
@@ -633,6 +633,6 @@ class _MarkPointCollectPageState extends State<MarkPointCollectPage> {
 
   // 项目管理
   void _handleProjectManager() {
-    Provider.of<MarkPointProvider>(context, listen: false).projectId = 1;
+    Provider.of<MarkPointProvider>(context, listen: false).projectUUID = 1;
   }
 }

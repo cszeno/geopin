@@ -364,7 +364,7 @@ class MarkPointDetailSheet extends StatelessWidget {
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
       builder: (context) => MarkPointFormPage(
-        projectId: markPoint.projectId!,
+        projectUUID: markPoint.projectUUID!,
         latitude: markPoint.latitude,
         longitude: markPoint.longitude,
         altitude: markPoint.elevation ?? 0,
