@@ -25,7 +25,7 @@ class MarkPointEntity {
   final double longitude;
   
   /// 关联的项目ID
-  final int? projectId;
+  late final int? projectId;
   
   /// 海拔高度（可选）
   final double? elevation;

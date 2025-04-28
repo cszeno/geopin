@@ -22,6 +22,9 @@ class MarkPointProvider with ChangeNotifier {
   
   /// 加载状态
   bool _isLoading = false;
+
+  /// 当前选择的项目id, -1 为默认项目id
+  int projectId = -1;
   
   /// 错误信息
   String? _errorMessage;

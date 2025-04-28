@@ -13,6 +13,9 @@ abstract class MarkPointLocalDataSource {
   /// 获取所有标记点
   Future<List<MarkPointModel>> getAllMarkPoints();
 
+  /// 获取所有标记点
+  Future<List<MarkPointModel>> getAllMarkPointsByProjectId(int projectId);
+
   /// 根据ID获取标记点
   Future<MarkPointModel> getMarkPointById(int id);
 
@@ -135,6 +138,19 @@ class MarkPointLocalDataSourceImpl implements MarkPointLocalDataSource {
   Future<List<MarkPointModel>> getAllMarkPoints() async {
     // 查询所有记录
     final List<Map<String, dynamic>> maps = await database.query(tableName);
+
+    // 转换为Model列表
+    return maps.map((map) => _dbMapToModel(map)).toList();
+  }
+
+  @override
+  Future<List<MarkPointModel>> getAllMarkPointsByProjectId(int projectId) async {
+    // 查询指定ID的记录
+    final List<Map<String, dynamic>> maps = await database.query(
+      tableName,
+      where: 'project_id = ?',
+      whereArgs: [projectId],
+    );
 
     // 转换为Model列表
     return maps.map((map) => _dbMapToModel(map)).toList();

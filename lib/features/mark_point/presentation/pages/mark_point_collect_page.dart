@@ -489,6 +489,7 @@ class _MarkPointCollectPageState extends State<MarkPointCollectPage> {
                 longitude: _currentCenter.longitude,
                 onSubmit: (markPoint) {
                   // 添加新的标记点 - Provider会自动通知UI更新
+                  markPoint.projectId = markPointProvider.projectId;
                   markPointProvider.addPoint(markPoint);
                 },
               ),

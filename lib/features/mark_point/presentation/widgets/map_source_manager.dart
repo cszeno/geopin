@@ -43,8 +43,33 @@ class MapSourceManager {
   // 默认地图源
   final List<MapSource> _defaultMapSources = [
     MapSource(
-      name: '高德地图',
+      name: '高德矢量',
       urlTemplate: 'http://wprd04.is.autonavi.com/appmaptile?lang=zh_cn&size=1&style=7&x={x}&y={y}&z={z}',
+      isDefault: true,
+    ),
+    MapSource(
+      name: '高德路网',
+      urlTemplate: 'https://wprd01.is.autonavi.com/appmaptile?x={x}&y={y}&z={z}&lang=zh_cn&size=1&scl=2&style=8&ltype=11',
+      isDefault: true,
+    ),
+    MapSource(
+      name: '高德影像',
+      urlTemplate: 'http://wprd04.is.autonavi.com/appmaptile?lang=zh_cn&size=1&style=7&x={x}&y={y}&z={z}',
+      isDefault: true,
+    ),
+    MapSource(
+      name: '谷歌矢量',
+      urlTemplate: 'http://mt2.google.cn/vt/lyrs=m&scale=2&hl=zh-CN&gl=cn&x={x}&y={y}&z={z}',
+      isDefault: true,
+    ),
+    MapSource(
+      name: '谷歌路网',
+      urlTemplate: 'https://mt1.google.com/vt/lyrs=h&x={x}&y={y}&z={z}',
+      isDefault: true,
+    ),
+    MapSource(
+      name: '谷歌影像',
+      urlTemplate: 'http://www.google.cn/maps/vt?lyrs=s@189&gl=cn&x={x}&y={y}&z={z}',
       isDefault: true,
     ),
     MapSource(
@@ -159,10 +184,10 @@ class MapSourceSheet extends StatefulWidget {
   final VoidCallback onMapSourceChanged;
   
   const MapSourceSheet({
-    Key? key, 
+    super.key,
     required this.manager,
     required this.onMapSourceChanged,
-  }) : super(key: key);
+  });
 
   @override
   State<MapSourceSheet> createState() => _MapSourceSheetState();
@@ -669,7 +694,9 @@ class _MapSourceSheetState extends State<MapSourceSheet> {
                       if (value == null || value.isEmpty) {
                         return '请输入URL模板';
                       }
-                      if (!value.contains('{x}') || !value.contains('{y}') || !value.contains('{z}')) {
+                      if (!(value.contains('{x}') || value.contains('{-x}')) ||
+                          !(value.contains('{y}') || value.contains('{-y}')) ||
+                          !(value.contains('{z}') || value.contains('{-z}'))) {
                         return 'URL必须包含 {x}, {y}, {z} 变量';
                       }
                       return null;
