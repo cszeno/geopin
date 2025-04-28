@@ -202,10 +202,18 @@ class _MapSideToolbarState extends State<MapSideToolbar> with SingleTickerProvid
             ? widget.items.length
             : widget.collapsedItemCount;
 
-        return Material(
-          elevation: widget.elevation,
-          borderRadius: BorderRadius.circular(widget.borderRadius),
-          color: widget.backgroundColor,
+        return Container(
+          decoration: BoxDecoration(
+            color: widget.backgroundColor,
+            borderRadius: BorderRadius.circular(widget.borderRadius),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.1),
+                blurRadius: widget.elevation,
+                offset: const Offset(0, 2),
+              ),
+            ],
+          ),
           child: Container(
             width: widget.width,
             // 限制最大高度
@@ -249,7 +257,7 @@ class _MapSideToolbarState extends State<MapSideToolbar> with SingleTickerProvid
 
   /// 构建展开/收缩切换按钮
   Widget _buildToggleButton() {
-    return Material(
+    return Container(
       color: Colors.transparent,
       child: InkWell(
         onTap: _toggleExpand,
@@ -280,7 +288,7 @@ class _MapSideToolbarState extends State<MapSideToolbar> with SingleTickerProvid
   /// 构建单个工具项
   Widget _buildToolItem(MapToolItem tool, int index) {
     // 创建工具提示包装
-    Widget toolItemWidget = Material(
+    Widget toolItemWidget = Container(
       color: Colors.transparent,
       child: InkWell(
         onTap: tool.enabled ? () => widget.onToolTap(tool) : null,
