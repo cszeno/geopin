@@ -366,9 +366,9 @@ class _MarkPointCollectPageState extends State<MarkPointCollectPage> {
   Widget _buildSideToolbar() {
     return Positioned(
       left: 8,
-      top: MediaQuery.of(context).padding.top + 80,
+      top: MediaQuery.of(context).padding.top + 120,
       child: MapSideToolbar(
-        collapsedItemCount: 0,
+        collapsedItemCount: 3,
         items: _toolbarController.toolItems,
         itemHeight: 64,
         onToolTap: _handleToolTap,

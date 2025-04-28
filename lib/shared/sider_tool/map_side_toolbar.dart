@@ -263,7 +263,7 @@ class _MapSideToolbarState extends State<MapSideToolbar> with SingleTickerProvid
         onTap: _toggleExpand,
         child: Container(
           width: widget.width,
-          height: 30, // 固定高度以避免溢出
+          height: _isExpanded ? 30 : 40, // 固定高度以避免溢出
           decoration: BoxDecoration(
             color: Colors.blue.withValues(alpha: 0.1),
             borderRadius: BorderRadius.only(
@@ -271,14 +271,21 @@ class _MapSideToolbarState extends State<MapSideToolbar> with SingleTickerProvid
               bottomRight: Radius.circular(widget.borderRadius),
             ),
           ),
-          child: Center(
-            child: Icon(
-              _isExpanded
-                  ? Icons.keyboard_arrow_up
-                  : Icons.keyboard_arrow_down,
-              color: Colors.blue,
-              size: 20,
-            ),
+          child: Column(
+            children: [
+              Center(
+                child: Icon(
+                  _isExpanded
+                      ? Icons.keyboard_arrow_up
+                      : Icons.keyboard_arrow_down,
+                  color: Colors.blue,
+                  size: 20,
+                ),
+              ),
+              if(!_isExpanded)
+                Text("更多",
+                  style: TextStyle(fontSize: 10, color: Colors.grey[800]),),
+            ],
           ),
         ),
       ),
