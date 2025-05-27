@@ -2,7 +2,6 @@ import 'package:geopin/features/location/presentation/mini_app_impl.dart';
 import 'package:geopin/features/settings/mini_app_impl.dart';
 
 import '../../features/log/mini_app_impl.dart';
-import '../../features/mark_line/mini_app_impl.dart';
 import '../../features/mark_point/mini_app_impl.dart';
 import '../../shared/mini_app/domain/registry/mini_app_hub.dart';
 
@@ -23,7 +22,6 @@ class MiniAppInitializer {
     
     // 注册所有MiniApp
     hub.register(MarkPointMiniApp.instance);
-    hub.register(MarkLineMiniApp.instance);
     hub.register(LocationTestApp.instance);
     hub.register(LogMiniApp.instance);
     hub.register(SettingsMiniApp.instance);

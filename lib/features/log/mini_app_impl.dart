@@ -20,7 +20,7 @@ class LogMiniApp extends AbstractMiniApp {
   @override
   MiniAppModel get config => const MiniAppModel(
     id: 'log',
-    name: '标记点',
+    name: '日志',
     icon: Icons.text_snippet,
     color: Color(0xFF007AFF),
     backgroundColor: Color(0xFF007AFF),
