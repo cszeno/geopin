@@ -19,11 +19,11 @@ class ImagePreviewWidget extends StatelessWidget {
   
   /// 构造函数
   const ImagePreviewWidget({
-    Key? key,
+    super.key,
     required this.selectedImagePaths,
     required this.onAddImage,
     required this.onRemoveImage,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -85,7 +85,7 @@ class ImagePreviewWidget extends StatelessWidget {
               style: Theme.of(context).textTheme.titleMedium,
             ),
             ElevatedButton.icon(
-              onPressed: () => onAddImage,
+              onPressed: onAddImage,
               icon: const Icon(Icons.add, size: 18),
               label: const Text('添加图片'),
               style: ElevatedButton.styleFrom(
